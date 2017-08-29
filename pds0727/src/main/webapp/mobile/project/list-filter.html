@@ -1,0 +1,42 @@
+<mobile-nav ng-click="back()" >日志查询</mobile-nav>
+<!--href="#/list"-->
+<div class="container-fluid" style="margin:10px auto;">
+    <form class="form-horizontal" method="post" name="searchForm">
+        <div class="form-group">
+            <label for="selectPId" class="col-sm-2 control-label">项目名</label>
+            <div class="col-sm-10">
+                <input type="text" id="selectPId"  name="selectPname" ng-model="listFilter.pname" placeholder="模糊查询" class="form-control" ng-trim/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="person_prLog" class="col-sm-2 control-label">更新人</label>
+            <div class="col-sm-10">
+                <input type="text" name="person" class="form-control" id="person_prLog" ng-click="updatePerson()" ng-model="listFilter.proRespName" placeholder="更新人">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="selectSDate_prLog" class="col-sm-2 control-label">报告开始时间</label>
+            <div class="col-sm-10">
+                <input type="date" class="form-control" id="selectSDate_prLog" name="selectSDate" ng-model="listFilter.selectSDate"  placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="selectEDate_prLog" class="col-sm-2 control-label">报告截止时间</label>
+            <div class="col-sm-10">
+                <input type="date" name="selectEDate" class="form-control" id="selectEDate_prLog" ng-model="listFilter.selectEDate"   placeholder="yyyy-MM-dd" />
+            </div>
+            <span class="col-sm-2 control-label error" ng-if="listFilter.selectEDate < listFilter.selectSDate" >
+                <font style="font-size: 12px; color: red">
+                    开始时间不能晚于截止时间！
+                </font>
+            </span>
+        </div>
+
+        <div class="form-group" style="margin: 10px auto;">
+            <button class="btn btn-success btn-block" ng-click="saveListFilter()" loading-button >查询</button>
+            <button class="btn btn-success btn-block" ng-click="resetListFilter()" loading-button >清空</button>
+        </div>
+    </form>
+
+</div>

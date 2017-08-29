@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.log">
+
+    <sql id="prlog">
+         PNAME,PERSON,DETAIL,SDATE,CDATE,ISDELETE,LID,PFLAG,PID,CONTENTS,USER_ID
+    </sql>
+
+    <!--查询日志表的详细-->
+    <select id="queryprlogContents" parameterType="map"  resultType="ProjectLog">
+        select  PNAME,PERSON,DETAIL,SDATE,CDATE,ISDELETE,LID,PFLAG,PID,CONTENTS,(select MC from t_project_code code  where code.typecode=t.pflag and code.PID=t.PID) pstage,user_id from  T_PROJECT_LOG t
+        <where>
+            <if test="prLog.pname !=null">
+                pname=#{prLog.pname}
+            </if>
+            <if test="prLog.pid !=null">
+                AND    pid=#{prLog.pid}
+            </if>
+            <if test="prLog.person !=null">
+                AND    person=#{prLog.person}
+            </if>
+            <if test="prLog.detail !=null">
+                AND   detail=#{prLog.detail}
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    cdate=#{prLog.cdate}
+            </if>
+            <if test="prLog.isdelete !=null">
+                AND    isdelete=#{prLog.isdelete}
+            </if>
+            <if test="prLog.lid !=null">
+                AND    lid=#{prLog.lid}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPidsByTime" parameterType="map"  resultType="ProjectLog">
+        select distinct t.PID,t.PNAME from  T_PROJECT_LOG t
+        left join sys_user u on t.person=u.name
+        left join t_project p on t.pid=p.pid
+        <where>
+        		p.isdelete ='0'
+            <if test="pids !=null">
+            	AND   t.pid in
+                <foreach item="item" collection="pids" separator="," open="(" close=")">
+				#{item}
+				</foreach>
+            </if>
+            <if test="prLog.userId != null and pids ==null">
+            	AND   t.pid in
+                (select pu.pid from T_PROJECT_USER pu where pu.userid=#{prLog.userId})
+            </if>
+            <if test="updateIds !=null">
+                AND    u.id in
+                <foreach item="item" collection="updateIds" separator="," open="(" close=")">
+				#{item}
+				</foreach>
+            </if>
+            <if test="prLog.selectSDate !=null and prLog.selectSDate !='' ">
+                <![CDATA[  AND    t.sdate >=to_date(#{prLog.selectSDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="prLog.selectEDate !=null and prLog.selectEDate !='' ">
+                <![CDATA[  AND     t.sdate <= to_date(#{prLog.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="prLog.detail !=null">
+                AND   t.detail=#{prLog.detail}
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    t.cdate=#{prLog.cdate}
+            </if>
+            <if test="prLog.isdelete !=null">
+                AND    t.isdelete=#{prLog.isdelete}
+            </if>
+            <if test="prLog.lid !=null">
+                AND    t.lid=#{prLog.lid}
+            </if>
+        </where>
+    </select>
+
+    <!--查询下一个sequcence-->
+    <select id="querylidsequence"   resultType="Integer">
+           select LOG_ID_SEQ.NEXTVAL from dual
+    </select>
+
+    <!--查询项目表-->
+    <select id="queryprlog" parameterType="map"  resultType="ProjectLog">
+        select  PNAME,u.name as PERSON,DETAIL,SDATE,CDATE,ISDELETE,LID,PFLAG,PID,(
+        select MC from t_project_code code  where code.typecode=t.pflag and code.PID=t.PID) pstage,t.user_id,t.issuccess from  T_PROJECT_LOG t
+        left join sys_user u on t.user_id=u.id
+        <where>
+
+            <if test="prLog.pid !=null">
+                pid=#{prLog.pid}
+            </if>
+            <if test="prLog.pname !=null">
+                pname LIKE '%${prLog.pname}%'
+            </if>
+            <if test="updateIds !=null">
+                AND    t.user_id in
+                <foreach item="item" collection="updateIds" separator="," open="(" close=")">
+				#{item}
+				</foreach>
+            </if>
+            <if test="prLog.detail !=null">
+                AND   detail=#{prLog.detail}
+            </if>
+            <if test="prLog.selectSDate !=null and prLog.selectSDate !='' ">
+                AND   sdate >=to_date(#{prLog.selectSDate},'yyyy-mm-dd')
+            </if>
+            <if test="prLog.selectEDate !=null and prLog.selectEDate !='' ">
+                <![CDATA[  AND  sdate <= to_date(#{prLog.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    cdate=#{prLog.cdate}
+            </if>
+            <if test="prLog.isdelete !=null">
+                AND    isdelete=#{prLog.isdelete}
+            </if>
+            <if test="prLog.isSuccess !=null">
+                AND    issuccess=#{prLog.isSuccess}
+            </if>
+            <if test="prLog.updatePerIdArr != null">
+                AND pid in (select pid FROM T_PROJECT_USER WHERE userid in
+                <foreach item="item" index="index" collection="prLog.updatePerIdArr" open="(" separator="," close=")" >
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+        and t.pid in (select p.pid from t_project p where p.isdelete = 0)
+        ORDER BY SDATE DESC
+    </select>
+
+    <!--现实记录总条数-->
+    <select id="prlogcount" parameterType="map"  resultType="Integer">
+        select count(1) from  T_PROJECT_LOG t
+        left join sys_user u on t.user_id=u.id
+        <where>
+            <if test="prLog.pid !=null">
+                pid=#{prLog.pid}
+            </if>
+            <if test="prLog.pname !=null">
+                pname LIKE '%${prLog.pname}%'
+            </if>
+            <if test="updateIds !=null">
+                AND    t.user_id in
+                <foreach item="item" collection="updateIds" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="prLog.detail !=null">
+                AND   detail=#{prLog.detail}
+            </if>
+            <if test="prLog.selectSDate !=null and prLog.selectSDate !='' ">
+                AND   sdate >=to_date(#{prLog.selectSDate},'yyyy-mm-dd')
+            </if>
+            <if test="prLog.selectEDate !=null and prLog.selectEDate !='' ">
+                <![CDATA[  AND     sdate <= to_date(#{prLog.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    cdate=#{prLog.cdate}
+            </if>
+            <if test="prLog.isdelete !=null">
+                AND    isdelete=#{prLog.isdelete}
+            </if>
+            <if test="prLog.updatePerIdArr != null">
+                AND pid in (select pid FROM T_PROJECT_USER WHERE userid in
+                <foreach item="item" index="index" collection="prLog.updatePerIdArr" open="(" separator="," close=")" >
+                    #{item}
+                </foreach>
+                )
+            </if>
+        </where>
+        and t.pid in (select p.pid from t_project p where p.isdelete = 0)
+    </select>
+
+ <!--现实记录总条数-->
+    <select id="prlogcountPflag" parameterType="map"  resultType="Integer">
+        select count(1) from  T_PROJECT_LOG t
+        <where>
+            <if test="prLog.pflag !=null">
+                pflag=#{prLog.pflag}
+            </if>
+        </where>
+       
+    </select>
+    <!--编辑资源表-->
+    <update id="updateprLog" parameterType="map">
+        UPDATE T_PROJECT_LOG  R
+        <set>
+            <if test="updateLog.pname != null and updateLog.pname !=''">
+                R.PNAME =#{updateLog.pname},
+            </if>
+            <if test="updateLog.person != null and updateLog.person !=''">
+                R.PERSON=#{updateLog.person},
+            </if>
+            <if test="updateLog.detail != null and updateLog.detail !=''">
+                R.DETAIL=#{updateLog.detail},
+            </if>
+            <if test="updateLog.sdate != null and updateLog.sdate !=''">
+                R.sdate=#{updateLog.sdate},
+            </if>
+            <if test="updateLog.cdate != null">
+                R.cdate=#{updateLog.cdate},
+            </if>
+            <if test="updateLog.isdelete != null ">
+                R.ISDELETE=#{updateLog.isdelete },
+            </if>
+            <if test="updateLog.pflag != null ">
+                R.PFLAG = #{updateLog.pflag },
+            </if>
+            <if test="updateLog.contents !=null and updateLog.contents !=''">
+                R.CONTENTS=#{updateLog.contents },
+            </if>
+            <if test="updateLog.isSuccess !=null">
+                R.ISSUCCESS=#{updateLog.isSuccess },
+            </if>
+        </set>
+        <trim prefix = "where" prefixOverrides = "and | or">
+            <if test="prLog.pname !=null">
+                AND    pname=#{prLog.pname}
+            </if>
+            <if test="prLog.person !=null">
+                AND    person=#{prLog.person}
+            </if>       
+           <!--  <if test="prLog.sdate !=null">
+                AND    sdate=#{prLog.sdate}
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    cdate=#{prLog.cdate}
+            </if> -->
+            <if test="prLog.isdelete !=null">
+                AND    isdelete=#{prLog.isdelete}
+            </if>
+            <if test="prLog.lid !=null">
+                AND    lid=#{prLog.lid}
+            </if>
+        </trim>
+    </update>
+
+    <!--插入资源表-->
+    <insert id="insertprlog" parameterType="ProjectLog">
+        INSERT INTO T_PROJECT_LOG (PNAME,PERSON,DETAIL,SDATE,CDATE,ISDELETE,LID,PFLAG,CONTENTS,PID,USER_ID,ISSUCCESS)
+        VALUES (#{pname},#{person},#{detail},#{sdate},#{cdate},#{isdelete},#{lid},#{pflag},#{contents,jdbcType=CLOB},#{pid},#{userId},#{isSuccess})
+    </insert>
+
+
+    <select id="queryPnameByTime" parameterType="map" resultType="ProjectLog">
+        select  DISTINCT  PNAME from  T_PROJECT_LOG t
+        <where>
+            <if test="prLog.pname !=null">
+                pname=#{prLog.pname}
+            </if>
+            <if test="prLog.person !=null">
+                AND    person=#{prLog.person}
+            </if>
+            <if test="prLog.detail !=null">
+                AND   detail=#{prLog.detail}
+            </if>
+            <if test="prLog.selectSDate !=null and prLog.selectSDate !='' ">
+                AND    sdate >=to_date(#{prLog.selectSDate},'yyyy-mm-dd')
+            </if>
+            <if test="prLog.selectEDate !=null and prLog.selectEDate !='' ">
+                <![CDATA[  AND     sdate <= to_date(#{prLog.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="prLog.cdate !=null">
+                AND    cdate=#{prLog.cdate}
+            </if>
+            <if test="prLog.isdelete !=null">
+                AND    isdelete=#{prLog.isdelete}
+            </if>
+        </where>
+    </select>
+
+    <select id="changeProjectLogPflag" parameterType="map" resultType="ProjectLog" >
+        select <include refid="prlog"/> from t_project_log t where t.pid = #{pid} and t.pflag not in (${inStage})
+    </select>
+
+</mapper>

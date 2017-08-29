@@ -1,0 +1,36 @@
+<mobile-nav ng-click="editBack()" >修改项目</mobile-nav>
+<!--<mobile-nav href= {{href_type}} >修改项目</mobile-nav>-->
+
+<div class="container-fluid">
+    <form  name="editProjectForm">
+        <div class="form-group">
+            <label for="edit_pname" class="col-sm-2 control-label">项目名称：</label>
+            <input type="text" id="edit_pname" name="edit_pname" ng-model="project.pname" class="form-control" required ng-trim placeholder="请输入项目名称" />
+        </div>
+        <div class="form-group">
+            <label for="edit_pflag" class="col-sm-2 control-label">项目阶段：</label>
+            <div >
+                <input class="form-control" id="edit_pflag" name="stage" ng-model="project.pstage" ng-click="updateStage()" placeholder="请选择项目阶段" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="edit_pintro" class="col-sm-2 control-label">项目简介：</label>
+            <textarea class="form-control" rows="3" id="edit_pintro" name="edit_pintro" ng-model="project.pintro" style="word-wrap: break-word; width:100%;" required ng-trim placeholder="请输入项目简介" ></textarea>
+        </div>
+        <div class="form-group">
+            <label for="edit_response" class="col-sm-2 control-label">项目负责人：</label>
+            <input class="form-control" id="edit_response" name="response" ng-model="project.isResponse" ng-click="commList_isResponse()" placeholder="请选择项目负责人" />
+        </div>
+        <div class="form-group">
+            <label for="edit_userNames" class="col-sm-2 control-label">项目参与人：</label>
+            <input class="form-control" id="edit_userNames" name="userNames" ng-model="project.userNames" ng-click="commList()" placeholder="请选择项目参与人" />
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">立项人：</label>{{project.person}}
+        </div>
+        <div class="form-group">
+            <button class="btn btn-success btn-block" ng-click="submit()" loading-button is-done="submitDone">保存</button>
+            <button class="btn btn-success btn-block" ng-click="projectStage()" >阶段维护</button>
+        </div>
+    </form>
+</div>

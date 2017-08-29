@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.syscode" >
+
+	<sql id="colums">
+      ID, TYPECODE ,BM ,MC ,BZ, VALUE
+    </sql>
+    
+	<select id="findSysCode" parameterType="SysCodeConfig" resultType="SysCodeConfig">
+		SELECT <include refid="colums" /> FROM SYS_CODE 
+		<where>
+			<if test="typecode != null and typecode != ''"> TYPECODE LIKE '%${typecode}%' </if>
+			<if test="bm != null and bm != ''"> and BM = #{bm} </if>
+            <if test="mc != null and mc != ''"> and MC LIKE '%${mc}%' </if>
+            <if test="bz != null and bz != ''"> and BZ LIKE '%${bz}%' </if>
+            <if test="value != null and value != ''"> and VALUE LIKE '%${value}%' </if>
+		</where>
+	</select>
+	
+	<select id="findSysCodeTotal" parameterType="SysCodeConfig" resultType="Integer">
+		SELECT count(1) FROM SYS_CODE
+		<where>
+			<if test="typecode != null and typecode != ''"> TYPECODE LIKE '%${typecode}%' </if>
+			<if test="bm != null and bm != ''"> and BM = #{bm} </if>
+            <if test="mc != null and mc != ''"> and MC LIKE '%${mc}%' </if>
+            <if test="bz != null and bz != ''"> and BZ LIKE '%${bz}%' </if>
+            <if test="value != null and value != ''"> and VALUE LIKE '%${value}%' </if>
+		</where>
+	</select>
+	
+	<select id="getSysCodeById" parameterType="Integer" resultType="SysCodeConfig">
+		SELECT <include refid="colums" /> FROM SYS_CODE WHERE ID = #{editCodeId}
+	</select>
+	
+	<delete id="delSysCode" parameterType="String">
+		delete from sys_code where id = #{delSysCodeId}
+	</delete>
+	
+	<insert id="addSysCode" parameterType="SysCodeConfig">
+		insert into sys_code (<include refid="colums" />) values (#{id},#{typecode}, #{bm}, #{mc}, #{bz}, #{value})
+	</insert>
+	
+	<update id="editSysCode" parameterType="SysCodeConfig" >
+		update sys_code set 
+		<if test="typecode != null "> TYPECODE = #{typecode}, </if>
+		<if test="bm != null "> BM = #{bm}, </if>
+        <if test="mc != null "> MC = #{mc}, </if>
+        <if test="bz != null "> BZ = #{bz}, </if>
+        <if test="value != null "> VALUE = #{value} </if>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+	
+	<select id="getSysCodeList" resultType="SysCodeConfig">
+		SELECT <include refid="colums" /> FROM SYS_CODE 
+	</select>
+	
+	<select id="getCodeSequenceId" resultType="java.lang.Integer">
+		select syscode_seq.nextval from DUAL
+	</select>
+</mapper>

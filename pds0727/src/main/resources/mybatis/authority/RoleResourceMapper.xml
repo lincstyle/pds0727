@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.RoleResource">
+
+	<!-- 添加角色 -->
+	<insert id="addRoleResource" parameterType="RoleResource">
+		insert into sys_role_resource (id,role_id,resource_id)
+		values (ROLE_RESOURCE_SEQ.nextval, #{roleId}, #{resourceId})
+	</insert>
+
+	<!-- 根据ID删除角色 -->
+	<delete id="delRoleResource" parameterType="RoleResource">
+		delete from sys_role_resource 
+		where role_id = #{roleId} and resource_id = #{resourceId}
+	</delete>
+
+	<!-- 得到所有的资源 -->
+	<select id="getRoleResourceList" resultType="RoleResource" >
+		select id,role_id,resource_id from sys_role_resource 
+	</select>
+		
+	<!-- 根据角色ID得到此角色的资源 -->
+	<select id="getRoleResourceById" parameterType="Integer" resultType="RoleResource" >
+		select id,role_id,resource_id from sys_role_resource where role_id = #{roleId}
+	</select>
+
+	<!-- -->
+	<select id="getRoleResourceTree" parameterType="map" resultType="TreeNode">
+		select r.id as id,r.name as text,r.url as url,r.PARENT_ID as parentId
+		,DECODE(rr.id,null,0,1) as checked
+		from sys_resource r left join (select * from sys_role_resource r1 where r1.role_id = #{role_id} ) rr on rr.resource_id = r.id
+		<where>
+			<if test=" parent_id != null ">
+				r.parent_id = #{parent_id}
+			</if>
+			<if test=" checked != null ">
+				AND rr.id is ${checked}
+			</if>
+		</where>
+		ORDER  BY  r.Sort
+	</select>
+
+</mapper>

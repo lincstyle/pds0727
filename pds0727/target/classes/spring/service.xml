@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize">
+            <value>800000</value>
+        </property>
+        <property name="maxInMemorySize">
+            <value>4096</value>
+        </property>
+    </bean>
+
+    <bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <!-- 核心线程数  -->
+        <property name="corePoolSize" value="10"/>
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="50"/>
+        <!-- 队列最大长度 >=mainExecutor.maxSize -->
+        <property name="queueCapacity" value="1000"/>
+        <!-- 线程池维护线程所允许的空闲时间 -->
+        <property name="keepAliveSeconds" value="300"/>
+
+    </bean>
+
+    <bean id="wxCpService" class="me.chanjar.weixin.cp.api.WxCpServiceImpl">
+        <property name="wxCpConfigStorage" ref="wxCpConfigStorage" />
+    </bean>
+
+    <bean id="wxCpChatService" class="me.chanjar.weixin.cp.api.WxCpServiceImpl">
+        <property name="wxCpConfigStorage" ref="wxCpChatConfigStorage" />
+    </bean>
+
+	<bean id="wxCpConfigStorage" class="me.chanjar.weixin.cp.api.WxCpInMemoryConfigStorage">
+        <property name="corpId" value="wx14764cd1e761441a" />
+        <property name="corpSecret" value="CTpm2EZquwCf44sGnTFTL3AuJq_kgH5spU-Jvn5Dhemz65DWu9iCfpBo_ZHgSoj7" />
+        <property name="token" value="hu7TKGNsQracFfwFMYjSj" />
+        <property name="aesKey" value="zilAhehC64Q4W7QFqmWzXAlCrXSjBzgQr8UCl1c46kn" />
+    </bean>
+
+    <bean id="wxCpChatConfigStorage" class="me.chanjar.weixin.cp.api.WxCpInMemoryConfigStorage">
+        <property name="corpId" value="wx14764cd1e761441a" />
+        <property name="corpSecret" value="CTpm2EZquwCf44sGnTFTL3AuJq_kgH5spU-Jvn5Dhemz65DWu9iCfpBo_ZHgSoj7" />
+        <property name="token" value="hu7TKGNsQracFfwFMYjSj" />
+        <property name="aesKey" value="zilAhehC64Q4W7QFqmWzXAlCrXSjBzgQr8UCl1c46kn" />
+    </bean>
+
+    <bean id="wxCpMessageRouter" class="me.chanjar.weixin.cp.api.WxCpMessageRouter" >
+        <constructor-arg  ref="wxCpService"/>
+    </bean>
+
+    <bean class="com.ctdcn.pds.weixin.utils.WxCpRouterScanner" init-method="init" lazy-init="false">
+        <property name="basePackages">
+            <list>
+                <value>com.ctdcn.pds.weixin</value>
+            </list>
+        </property>
+    </bean>
+
+	<bean class="com.ctdcn.pds.sys.model.SysCodeVo" init-method="init" lazy-init="false"/>
+
+	<bean id="userConfig" class="com.ctdcn.pds.organization.model.UserConfig">
+		<property name="imgUrl" value="c:/upload/" />
+	</bean>
+	
+	<bean id="sheetNo" class="com.ctdcn.pds.worksheet.service.SheetNo">
+		<constructor-arg ref="sheetDao"></constructor-arg>  
+	</bean>
+</beans>

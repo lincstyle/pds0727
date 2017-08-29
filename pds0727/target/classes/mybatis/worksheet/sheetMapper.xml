@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worksheet.manage">
+
+<!-- 联络单列表 -->
+<select id="sheetList"  parameterType="map" resultType="Sheet">
+	 select
+	 	ws.id,
+	 	ws.send_week,
+    	ws.send_dept,
+    	ws.send_id,
+    	ws.send_name,
+   	 	ws.send_date,
+    	ws.send_type,
+    	ws.send_theme,
+    	ws.end_date,
+    	ws.handle_id,
+  		(select h.name from sys_user h where h.id=ws.handle_id) handle_name,
+   		ws.handle_state,
+    	ws.handle_text,
+    	ws.manage_id,
+  		(select m.name from sys_user m where m.id=ws.manage_id) manage_name,
+  		ws.check_id,
+   		(select c.name from sys_user c where c.id=ws.check_id) check_name
+    from t_worksheet ws
+    <where>
+    		id>0 
+    	<if test="sheet.handleState != null ">
+    		<if test="sheet.handleState &lt;2">
+    			AND handle_state = #{sheet.handleState}
+    		</if>
+    		<if test="sheet.handleState &gt;=2 and sheet.handleState &lt;5">
+    			<![CDATA[ AND handle_state >=2 and handle_state <5 ]]>
+    		</if>
+    		<if test="sheet.handleState &gt;=5">
+    			<![CDATA[ AND handle_state >= 5 ]]>
+    		</if>
+    	</if>
+    	<if test="sheet.sendId != null and  sheet.sendId !=''">
+    		AND send_id = #{sheet.sendId}
+    	</if>
+    	<if test ="sheet.sendName != null and  sheet.sendName !=''">
+    		AND instr(send_name,#{sheet.sendName}) >0
+    	</if>
+    	<if test="sheet.checkId != null and  sheet.checkId !=''">
+    		AND check_id = #{sheet.checkId}
+    	</if>
+    	<if test="sheet.manageId != null and  sheet.manageId !=''">
+    		AND manage_id = #{sheet.manageId}
+    	</if>
+    	<if test="sheet.handleId != null and  sheet.handleId !=''">
+    		AND handle_id = #{sheet.handleId}
+    	</if>
+    	<if test="sheet.sendDeptId != null and  sheet.sendDeptId !=''">
+    		AND send_dept_id = #{sheet.sendDeptId}
+    	</if>
+    	<if test="sheet.sendDept != null and  sheet.sendDept !=''">
+    		AND instr(send_dept,#{sheet.sendDept}) >0 
+    	</if>
+    	<if test="sheet.handleDeptId != null and  sheet.handleDeptId !=''">
+    		AND handle_dept_id = #{sheet.handleDeptId}
+    	</if>
+    	<if test="userId != null and  userId  !=''">
+    		AND(
+    				send_id = #{userId} 
+    				OR check_id = #{userId} 
+    				OR manage_id = #{userId} 
+    				OR handle_id = #{userId}
+    				)
+    	</if>
+    	<if test="sheet.sendDate_start != null and sheet.sendDate_start !='' ">
+                <![CDATA[ AND send_date >= to_date(#{sheet.sendDate_start},'yyyy-mm-dd') ]]>
+		</if>
+		<if test="sheet.sendDate_end != null and sheet.sendDate_end !='' ">
+                <![CDATA[ AND send_date <= to_date(#{sheet.sendDate_end},'yyyy-mm-dd') ]]>
+		</if>
+		<if test="sheet.endDate_start != null and sheet.endDate_start !='' ">
+                <![CDATA[ AND end_date >=#{sheet.endDate_start} ]]>
+		</if>
+		<if test="sheet.endDate_end != null and sheet.endDate_end !='' ">
+                <![CDATA[ AND end_date <= #{sheet.endDate_end} ]]>
+		</if>
+		<if test="sheet.sendWeek != null and sheet.sendWeek !='' ">
+			AND send_week =#{sheet.sendWeek}
+		</if>
+    </where>
+    order by ws.id desc
+</select>
+
+<!-- 联络单详情 -->
+<select id="querySheet" parameterType="Integer" resultType="Sheet">
+select 
+	ws.no, 
+	ws.sign_id,
+	ws.sign_name,
+	send_dept_id,
+	ws.send_dept,
+	ws.send_id,
+	ws.send_name,
+	ws.send_date, 
+	ws.send_type,
+	ws.send_theme, 
+	ws.send_text, 
+	ws.import_lv, 
+	ws.handle_lv,
+	ws.end_date,
+	ws.check_id,
+	(select c.name from sys_user c where c.id=ws.check_id) check_name, 
+	ws.notify_dept_id,
+	(select n.department_name from sys_department n where n.department_id=ws.notify_dept_id) notify_dept, 
+	ws.handle_dept_id,
+	(select h.department_name from sys_department h where h.department_id=ws.handle_dept_id) handle_dept, 
+	ws.manage_id,
+	(select m.name from sys_user m where m.id=ws.manage_id) manage_name,
+	ws.handle_id,
+	(select h.name from sys_user h where h.id=ws.handle_id) handle_name,
+	ws.handle_text,
+	ws.handle_state  
+from t_worksheet ws 
+where ws.id=#{id} 
+</select>
+
+<!-- 新增联络单 -->
+<insert id="addSheet" parameterType="Sheet" >
+	insert into t_worksheet
+	( id, no, send_dept_id, send_dept, send_id, send_name, sign_id, sign_name, send_date, 
+	send_type, send_theme, send_text, import_lv, handle_lv, 
+	end_date, handle_dept_id, notify_dept_id, handle_state,send_week)
+	values
+	(worksheet_id_SEQ.nextval, #{no},  #{sendDeptId}, #{sendDept}, #{sendId}, #{sendName},
+	 #{signId}, #{signName}, #{sendDate}, #{sendType}, #{sendTheme}, #{sendText}, #{importLv},
+	 #{handleLv}, #{endDate}, #{handleDeptId}, #{notifyDeptId}, #{handleState}, #{sendWeek})
+</insert>
+
+<!-- 联络单审查、分发、处理 、修改-->
+<update id="updateSheet" parameterType="Sheet" >
+	update t_worksheet
+		<set>
+			<if test="sendDeptId !=null">
+				send_dept_id = #{sendDeptId},
+			</if>
+			<if test="sendDept !=null">
+				send_dept = #{sendDept},
+			</if>
+			<if test="sendId !=null">
+				send_id = #{sendId},
+			</if>
+			<if test="sendName !=null">
+				send_name = #{sendName},
+			</if>
+			<if test="signId !=null">
+				sign_id = #{signId},
+			</if>
+			<if test="signName !=null">
+				sign_name = #{signName},
+			</if>
+			<if test="sendDate !=null">
+				send_date = #{sendDate},
+			</if>
+			<if test="sendType !=null">
+				send_type = #{sendType},
+			</if>
+			<if test="sendTheme !=null">
+				send_theme = #{sendTheme},
+			</if>
+			<if test="sendText !=null">
+				send_text = #{sendText},
+			</if>
+			<if test="importLv !=null">
+				import_lv = #{importLv},
+			</if>
+			<if test="handleLv !=null">
+				handle_lv = #{handleLv},
+			</if>
+			 <if test="endDate !=null">
+				end_date = #{endDate},
+			</if>
+			<if test="handleDeptId !=null">
+				handle_dept_id = #{handleDeptId},
+			</if>
+			<if test="notifyDeptId !=null">
+				notify_dept_id = #{notifyDeptId},
+			</if>
+			<if test="sendWeek !=null">
+				send_week = #{sendWeek},
+			</if>
+			<if test="checkId !=null">
+				check_id = #{checkId},
+			</if>
+			<if test="manageId !=null">
+				manage_id = #{manageId},
+			</if>
+			<if test="handleState !=null">
+				handle_state = #{handleState},
+			</if>
+			<if test="handleId !=null">
+				handle_id = #{handleId},
+			</if>
+			<if test="handleText !=null">
+				handle_text = #{handleText},
+			</if>
+		</set>
+	where id = #{id}
+</update>
+
+<!-- 删除联络单 -->
+<delete id="deleteSheet" parameterType="Integer" >
+	delete from t_worksheet where id = #{id}
+</delete>
+
+<!-- 查询联络单最大编号 -->
+<select id="maxNo"  resultType="String">
+	select max(no) no from t_worksheet
+</select>
+
+</mapper>

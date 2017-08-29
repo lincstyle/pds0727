@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="worksheet.mark">
+
+<!-- 查询联络单备注 -->
+<select id="querymark" parameterType="SheetMark" resultType="SheetMark">
+	select 
+	m.id, 
+	m.sdate,
+	m.send_id,
+	(select u.name from sys_user u where u.id = m.send_id) send_name,
+	m.mark 
+	from t_worksheet_mark m 
+	<where>
+		<if test = "sheetId !=null and sheetId !=''">
+			m.sheet_id = #{sheetId}
+		</if>
+		<if test = "id !=null and id !=''">
+			m.id = #{id}
+		</if>
+	</where>
+	order by m.id
+</select>
+   
+<!-- 新建联络单备注 -->
+<insert id="addmark" parameterType="SheetMark" >
+	insert into t_worksheet_mark 
+	(id, sheet_id, sdate, send_id ,mark)
+	values 
+	(mark_id_SEQ.nextval , #{sheetId}, #{sdate}, #{sendId}, #{mark})
+</insert>
+
+<!-- 修改联络单备注 -->
+<update id="updatemark" parameterType="SheetMark">
+	update  t_worksheet_mark set
+	sdate = #{sdate},
+	mark = #{mark} 
+	where id = #{id}
+</update>
+
+<!-- 删除联络单备注 -->
+<delete id="deletemark" parameterType="SheetMark">
+	delete  from t_worksheet_mark 
+	<where>
+		<if test = "id !=null and id !=''">
+			id = #{id}
+		</if>
+		<if test = "sheetId !=null and sheetId !=''">
+			sheet_id = #{sheetId}
+		</if>
+	</where>
+</delete>
+</mapper>

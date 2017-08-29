@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="debug">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <RollingFile name="fileRollingFile" fileName="${sys:catalina.home}/logs/pds/app.log"
+                     filePattern="${sys:catalina.home}/logs/pds/app-$${date:yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="sqlRollingFile" fileName="${sys:catalina.home}/logs/pds/sql.log"
+                     filePattern="${sys:catalina.home}/logs/pds/sql-$${date:yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="loginRollingFile" fileName="${sys:catalina.home}/logs/pds/loginAccess.log"
+                     filePattern="${sys:catalina.home}/logs/pds/loginAccess-$${date:yyyy-MM-dd}.log">
+            <PatternLayout>
+                <pattern>%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="Console"/>
+        </Root>
+        <Logger name="druid.sql.Statement" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <Logger name="com.ctdcn.pds.sys.controller.LoginController" level="debug" additivity="false">
+            <AppenderRef ref="loginRollingFile" />
+        </Logger>
+
+        <Logger name="com.ctdcn.pds" level="debug" additivity="true">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Logger name="me.chanjar.weixin.cp.api.WxCpServiceImpl" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+    </Loggers>
+</Configuration>

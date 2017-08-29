@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.stage">
+
+    <!--查询项目阶段字典-->
+    <select id="queryStageCode" parameterType="PrCode"  resultType="PrCode">
+        select TYPECODE,MC,TYPE,PID FROM  T_PROJECT_CODE
+        <where>
+            <if test=" type != null and type !='' ">
+                type=#{type}
+            </if>
+            <if test=" pid != null ">
+                PID=#{pid}
+            </if>
+            <if test=" mc != null ">
+                MC=#{mc}
+            </if>
+            <if test=" typecode != null ">
+                TYPECODE=#{typecode}
+            </if>
+        </where>
+        order by typecode
+    </select>
+
+    <select id="queryallStage" parameterType="Map"  resultType="StageCode">
+        select TYPECODE,MC FROM  BASE_PROJECT_CODE
+        where TYPECODE not in (SELECT TYPECODE FROM  T_PROJECT_CODE  WHERE PID=#{pid} )
+        ORDER BY TYPECODE
+    </select>
+
+    <select id="projectStage" parameterType="Integer" resultType="StageCode" >
+        select bpc.typecode,bpc.mc,c.cid,c.pid from base_project_code bpc
+        left join (select pc.typecode,pc.cid,pc.pid from t_project_code pc where pc.pid = #{pid} ) c
+        on bpc.typecode = c.typecode ORDER BY bpc.typecode
+    </select>
+
+    <select id="getProStageById" parameterType="Integer" resultType="StageCode">
+        select p.pflag, pc.typecode,pc.mc,pc.cid, pc.pid from t_project p join t_project_code pc
+        on p.pid = pc.pid where p.pid = #{pid} ORDER BY pc.typecode
+    </select>
+
+</mapper>

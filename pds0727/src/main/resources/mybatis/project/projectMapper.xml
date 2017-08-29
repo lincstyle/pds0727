@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.manage">
+
+    <sql id="project">
+        PNAME,PFLAG,PINTRO,PERSON,PDATE,LASTPERSON,LASTDATE,ISDELETE,PID
+    </sql>
+
+    <!--查询项目表-->
+    <select id="queryproject" parameterType="map"  resultType="Project">
+        select distinct p.pid, p.pname, p.pflag, p.pintro, p.person, p.pdate, p.lastperson, p.lastdate, p.isdelete,
+        (select MC from t_project_code code where code.typecode = p.pflag and code.PID = p.PID) pstage
+        from t_project p, t_project_user u
+        <where>
+            p.pid = u.pid
+            <if test="project.pname !=null and project.pname !='' ">
+                AND p.pname like '%${project.pname}%'
+            </if>
+            <if test="project.pflag !=null ">
+                AND p.pflag=#{project.pflag}
+            </if>
+            <if test="project.pintro !=null and project.pintro !='' ">
+                AND p.pintro=#{project.pintro}
+            </if>
+            <if test="project.person !=null and project.person !=''">
+                AND p.person=#{project.person}
+            </if>
+            <if test="project.selectSDate != null and project.selectSDate !='' ">
+                <![CDATA[ AND p.pdate >= to_date(#{project.selectSDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.selectEDate !=null and project.selectEDate !='' ">
+                <![CDATA[ AND p.pdate <= to_date(#{project.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.lastSDate !=null and project.lastSDate !='' ">
+                <![CDATA[ AND p.lastdate >= to_date(#{project.lastSDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.lastEDate !=null and project.lastEDate !='' ">
+                <![CDATA[ AND p.lastdate <= to_date(#{project.lastEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.lastPerson !=null and project.lastPerson !=''">
+                AND p.lastPerson=#{project.lastPerson}
+            </if>
+            <if test="project.lastDate !=null and project.lastDate !=''">
+                AND p.lastdate=#{project.lastDate}
+            </if>
+            <if test="project.isdelete !=null ">
+                AND p.isdelete=#{project.isdelete}
+            </if>
+            <if test="project.pid !=null ">
+                AND p.pid=#{project.pid}
+            </if>
+            <if test="project.userId != null ">
+                AND u.userid = #{project.userId}
+            </if>
+        </where>
+        order by p.pdate DESC
+    </select>
+
+    <!--项目数目-->
+    <select id="countproject" parameterType="map"  resultType="Integer">
+        SELECT COUNT(distinct p.pid) FROM t_project p, t_project_user u
+        <where>
+            p.pid = u.pid
+            <if test="project.pname !=null and project.pname !=''">
+                and p.pname like '%${project.pname}%'
+            </if>
+            <if test="project.pflag !=null ">
+                AND p.pflag = #{project.pflag}
+            </if>
+            <if test="project.pintro !=null and project.pintro !='' ">
+                AND p.pintro=#{project.pintro}
+            </if>
+            <if test="project.person !=null and project.person !='' ">
+                AND p.person=#{project.person}
+            </if>
+            <if test="project.selectSDate !=null and project.selectSDate !='' ">
+                AND p.pdate >=to_date(#{project.selectSDate},'yyyy-mm-dd')
+            </if>
+            <if test="project.selectEDate !=null and project.selectEDate !='' ">
+                <![CDATA[ AND p.pdate <= to_date(#{project.selectEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.lastSDate !=null and project.lastSDate !='' ">
+                AND p.lastdate >=to_date(#{project.lastSDate},'yyyy-mm-dd')
+            </if>
+            <if test="project.lastEDate !=null and project.lastEDate !='' ">
+                <![CDATA[  AND p.lastdate <= to_date(#{project.lastEDate},'yyyy-mm-dd') ]]>
+            </if>
+            <if test="project.lastPerson !=null and project.lastPerson !=''">
+                AND p.lastPerson=#{project.lastPerson}
+            </if>
+            <if test="project.lastDate !=null and project.lastDate !=''">
+                AND p.lastdate=#{project.lastDate}
+            </if>
+            <if test="project.isdelete !=null ">
+                AND p.isdelete=#{project.isdelete}
+            </if>
+            <if test="project.pid !=null ">
+                AND p.pid=#{project.pid}
+            </if>
+            <if test="project.userId != null ">
+                AND u.userid = #{project.userId}
+            </if>
+        </where>
+
+    </select>
+
+    <!--编辑资源表-->
+    <update id="updateproject" parameterType="map">
+        UPDATE T_PROJECT  R
+        <set>
+            <if test="updatePr.pname !=null and updatePr.pname !=''">
+                R.PNAME =#{updatePr.pname},
+            </if>
+            <if test="updatePr.pflag !=null and updatePr.pflag !=''">
+                R.PFLAG=#{updatePr.pflag},
+            </if>
+            <if test="updatePr.pintro !=null and updatePr.pintro !=''">
+                R.PINTRO=#{updatePr.pintro},
+            </if>
+            <if test="updatePr.person !=null and updatePr.person !=''">
+                R.person=#{updatePr.person},
+            </if>
+            <if test="updatePr.pdate !=null and updatePr.pdate !=''">
+                R.PDATE=#{updatePr.pdate},
+            </if>
+            <if test="updatePr.lastPerson !=null and updatePr.lastPerson !=''">
+                R.LASTPERSON=#{updatePr.lastPerson},
+            </if>
+            <if test="updatePr.lastDate !=null ">
+                R.LASTDATE=#{updatePr.lastDate},
+            </if>
+            <if test="updatePr.isdelete !=null ">
+                R.ISDELETE=#{updatePr.isdelete },
+            </if>  
+           <if test="updatePr.delDate !=null">
+                R.DELDATE=#{updatePr.delDate}
+            </if>
+        </set>
+        <trim prefix = "where" prefixOverrides = "and | or">
+            <if test="project.pname !=null and project.pname !=''">
+                AND    pname=#{project.pname}
+            </if>
+            <if test="project.pflag !=null ">
+                AND    pflag=#{project.pflag}
+            </if>
+            <if test="project.pintro !=null and project.pintro !='' ">
+                AND    pintro=#{project.pintro}
+            </if>
+            <if test="project.person !=null and project.person !=''">
+                AND    person=#{project.person}
+            </if>
+            <if test="project.pdate !=null and project.pdate !='' ">
+                AND    pdate=#{project.pdate}
+            </if>
+            <if test="project.lastPerson !=null and project.lastPerson !=''">
+                AND    lastPerson=#{project.lastPerson}
+            </if>
+            <if test="project.lastDate !=null and project.lastDate !=''">
+                AND    lastdate=#{project.lastDate}
+            </if>
+            <if test="project.isdelete !=null ">
+                AND    isdelete=#{project.isdelete}
+            </if>
+            <if test="project.pid !=null and project.pid !=''">
+                AND    pid=#{project.pid}
+            </if>
+        </trim>
+    </update>
+
+    <!--插入资源表  -->
+    <insert id="insertproject" parameterType="Project">
+        INSERT INTO T_PROJECT (PNAME,PFLAG,PINTRO,PERSON,PDATE,LASTPERSON,LASTDATE,ISDELETE,PID)
+        VALUES (#{pname},#{pflag},#{pintro},#{person},#{pdate},#{lastPerson},#{lastDate},#{isdelete},#{pid})
+    </insert>
+
+    <!--根据项目ID查询项目明细 -->
+    <select id="getProjectDetail" parameterType="Integer" resultType="Project">
+        select <include refid="project"/>, (select MC from t_project_code code where  code.typecode = p.pflag and code.PID = p.PID) pstage
+        from T_PROJECT p
+        <where>
+            p.PID = #{pid}
+        </where>
+    </select>
+
+    <!-- 查询项目所处的阶段状态在不在修改的阶段数组里面 -->
+    <select id="changeProjectPflag" parameterType="Integer" resultType="Project">
+        select <include refid="project"/> from t_project t where t.pid = #{pid}
+     </select>
+
+ </mapper>

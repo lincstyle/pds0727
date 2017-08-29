@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans 
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 扫描注解Bean -->
+    <!-- 不扫描Controller 以免重复注册-->
+    <context:component-scan base-package="com.ctdcn.pds.*.service">
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+	<!--服务层配置 -->
+    <import resource="classpath:spring/service.xml" />
+    <!-- 数据访问层配置 -->
+    <import resource="classpath:spring/dao.xml" />
+
+    <import resource="shiro.xml" />
+
+    <!-- 错误消息文件 -->
+    <context:property-placeholder location="classpath:error.properties"/>
+
+    <!-- spring 工具类 -->
+    <bean id="springUtils" class="com.ctdcn.utils.SpringUtils" />
+
+    <!-- 国际化的消息资源文件（本系统中主要用于显示/错误消息定制） -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <!-- 在web环境中一定要定位到classpath 否则默认到当前web应用下找  -->
+                <value>classpath:error</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="false"/>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+    </bean>
+
+    <!--异常处理-->
+    <bean id="exceptionHandler" class="com.ctdcn.pds.Handler.MyExceptionHandler"/>
+    
+    <bean id="myTask" class="com.ctdcn.utils.quartz.QuartzTask"></bean>
+	<!-- quartz -->
+    <bean id="firstJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="myTask"></property>
+		<property name="targetMethod" value="taskRun"></property>
+	</bean>
+	<!-- 短定时任务，无限重复执行，每5分钟执行一次 -->
+	<bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="firstJobDetail"></property>
+        <property name="repeatCount">
+            <value>-1</value>
+        </property>
+        <property name="repeatInterval">
+            <value>300000</value>
+        </property>
+        <property name="startDelay">
+            <value>0</value>
+        </property>
+    </bean>
+    
+    <bean id="secondJobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="myTask"></property>
+		<property name="targetMethod" value="timerController"></property>
+	</bean>
+	<!-- 长定时任务，无限重复执行，每75分钟执行一次，首次延时75分钟执行 -->
+	<bean id="zntaskTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+			<ref bean="secondJobDetail" />
+		</property>
+		<property name="startDelay">
+            <value>4500000</value>
+        </property>
+		<property name="cronExpression">
+			<value>0 0/75 * * * ?</value>
+		</property>
+	</bean>
+	<!-- 同时启动两个定时任务，实际上达到的效果是间隔1小时执行一次短定时任务 -->
+	<bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="simpleTrigger" />
+				<ref bean="zntaskTrigger" />
+			</list>
+		</property>
+	</bean> 
+
+</beans>
+  

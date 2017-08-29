@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.resource">
+
+    <sql id="colname">
+              ID,NAME,URL,PARENT_ID,IS_SHOW,IDENTITY,WIDTH,SORT
+       </sql>
+
+
+    <!--查询资源表-->
+    <select id="queryresource" parameterType="map" resultType="Resource">
+        select
+        <include refid="colname"/>
+        from SYS_RESOURCE
+        <where>
+            <if test="resource.name !=null">
+                name=#{resource.name}
+            </if>
+            <if test="resource.parentId !=null">
+                AND parent_id=#{resource.parentId}
+            </if>
+            <if test="resource.parentIds !=null">
+                AND PARENT_IDS=#{resource.parentIds}
+            </if>
+            <if test="resource.isShow !=null">
+                AND IS_SHOW=#{resource.isShow}
+            </if>
+            <if test="resource.identity !=null">
+                AND IDENTITY=#{resource.identity}
+            </if>
+        </where>
+        ORDER By sort
+    </select>
+
+    <select id="queryResourceWitch" parameterType="map" resultType="Resource">
+        select
+        <include refid="colname"/>
+        from SYS_RESOURCE
+        <if test="_parameter !=null">
+            start with parent_id = ${_parameter} connect by parent_id = id
+        </if>
+        ORDER By sort
+    </select>
+
+
+    <!--编辑资源表-->
+    <update id="updateresource" parameterType="map">
+        UPDATE SYS_RESOURCE R
+        <set>
+            <if test="updateRe.name !=null">
+                R.NAME =#{updateRe.name},
+            </if>
+            <if test="updateRe.url !=null">
+                R.URL=#{updateRe.url},
+            </if>
+            <if test="updateRe.parentId !=null">
+                R.PARENT_ID=#{updateRe.parentId},
+            </if>
+            <if test="updateRe.isShow !=null ">
+                R.IS_SHOW=#{updateRe.isShow},
+            </if>
+            <if test="updateRe.identity !=null ">
+                R.identity=#{updateRe.identity}
+            </if>
+            <if test="updateRe.sort !=null ">
+                R.sort=#{updateRe.sort}
+            </if>
+        </set>
+        <where>
+            <if test="resource.id !=null and resource.id !=''">
+                id=#{resource.id}
+            </if>
+            <if test="resource.name !=null and resource.name !=''">
+                AND name=#{resource.name}
+            </if>
+            <if test="resource.parentId !=null and resource.parentId !=''">
+                AND parent_id=#{resource.parentId}
+            </if>
+            <if test="resource.isShow !=null and resource.isShow !=''">
+                AND IS_SHOW=#{resource.isShow}
+            </if>
+            <if test="resource.identity !=null and resource.identity !=''">
+                AND IDENTITY=#{resource.identity}
+            </if>
+        </where>
+    </update>
+
+    <!--插入资源表-->
+
+
+    <insert id="insertresource" parameterType="Resource">
+              INSERT INTO SYS_RESOURCE (ID,NAME,URL,PARENT_ID,IS_SHOW,IDENTITY,SORT,WIDTH)
+              VALUES (resource_id_seq.nextval ,#{name},#{url},#{parentId},#{isShow},#{identity},#{sort},#{width})
+       </insert>
+
+
+    <!--删除资源表记录-->
+    <delete id="deleteresource" parameterType="Resource">
+        Delete FROM SYS_RESOURCE R
+        <where>
+            <if test="id !=null and id !=''">
+                id=#{id}
+            </if>
+            <if test="name !=null and name !=''">
+                name=#{name}
+            </if>
+            <if test="parentId !=null and parentId !=''">
+                AND parent_id=#{parentId}
+            </if>
+            <if test="parentIds !=null and parentIds !=''">
+                AND PARENT_IDS=#{parentIds}
+            </if>
+            <if test="isShow !=null and isShow !=''">
+                AND IS_SHOW=#{isShow}
+            </if>
+            <if test="identity !=null and identity !=''">
+                AND IDENTITY=#{identity}
+            </if>
+        </where>
+    </delete>
+
+
+    <!--根据roleId 去查拥有什么权限-->
+    <select id="queryResourceByRole" parameterType="map" resultType="Resource">
+        SELECT * from SYS_ROLE_RESOURCE a left join sys_resource b on a.resource_id=b.id where
+        a.ROLE_ID=#{roleId}
+    </select>
+
+    <select id="queryResourceByRoleWithWidth" parameterType="map" resultType="Resource">
+        select * from sys_resource
+        start with id in (
+            SELECT RESOURCE_ID
+            from SYS_ROLE_RESOURCE a
+            left join sys_resource b
+            on a.resource_id = b.id
+            where a.ROLE_ID = #{roleId}
+            and b.width = #{width}
+        )
+        connect by prior parent_id = id
+    </select>
+
+
+    <!--根据resource_id去 拼接拥有什么权限-->
+    <select id="splice" parameterType="map" resultType="String">
+          SELECT listagg ( IDENTITY,':') within group ( order by id) from (select * from sys_resource start with id = #{id} connect by prior parent_id = id)
+    </select>
+
+    <!-- 得到resource 树 -->
+    <select id="showResourceTree" resultType="Resource">
+          SELECT * from SYS_RESOURCE where parent_id = 0 order by sort
+     </select>
+
+    <update id="move" parameterType="map">
+        UPDATE SYS_RESOURCE SET SORT = SORT
+        <choose>
+            <when test=" target == null ">
+                -1 WHERE SORT > #{original}
+            </when>
+            <when test="target > original">
+                -1 WHERE SORT > #{original} AND #{target} >= SORT
+            </when>
+            <otherwise>
+                +1 WHERE SORT >= #{target} AND #{original} > SORT
+            </otherwise>
+        </choose>
+            AND PARENT_ID = #{parentId}
+    </update>
+
+    <select id="queryMax" resultType="Integer">
+        SELECT MAX(SORT) FROM  SYS_RESOURCE r WHERE r.PARENT_ID = #{_parameter}
+    </select>
+
+    <select id="queryChildren" resultType="Resource">
+        SELECT <include refid="colname" /> FROM SYS_RESOURCE
+        START WITH Id= ${_parameter}
+        CONNECT BY PRIOR ID=PARENT_ID
+    </select>
+
+</mapper>
+
+

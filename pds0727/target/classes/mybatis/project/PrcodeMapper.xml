@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.code">
+
+    <sql id="cid_in">
+        cid in
+        <foreach item="item" index="index" collection="array"
+                 open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </sql>
+
+    <!--查询项目编码表-->
+    <select id="queryprcode" parameterType="map"  resultType="PrCode">
+        select  TYPECODE,MC,PID,TYPE,CID  from  T_PROJECT_CODE t
+        <where>
+            <if test="prCode.typeCode !=null">
+                TYPECODE=#{prCode.typeCode}
+            </if>
+            <if test="prCode.mc !=null">
+                AND MC=#{prCode.mc}
+            </if>
+            <if test="prCode.pid !=null">
+                AND  PID=#{prCode.pid}
+            </if>
+            <if test="prCode.type !=null">
+                AND  TYPE=#{prCode.type}
+            </if>
+            <if test="prCode.cid !=null">
+                AND  TYPE=#{prCode.cid}
+            </if>
+
+        </where>
+    </select>
+
+    <!--记录总条数-->
+    <select id="prCodeCount" parameterType="map"  resultType="Integer">
+        select count(1) from  T_PROJECT_CODE t
+        <where>
+            <if test="prCode.typeCode !=null">
+                TYPECODE=#{prCode.typeCode}
+            </if>
+            <if test="prCode.mc !=null">
+                AND MC=#{prCode.mc}
+            </if>
+            <if test="prCode.pid !=null">
+                AND  PID=#{prCode.pid}
+            </if>
+            <if test="prCode.type !=null">
+                AND  TYPE=#{prCode.type}
+            </if>
+            <if test="prCode.cid !=null">
+                AND  cid=#{prCode.cid}
+            </if>
+        </where>
+    </select>
+
+    <!--编辑项目编码表-->
+    <update id="updateprCode" parameterType="map">
+        UPDATE T_PROJECT_CODE  R
+        <set>
+            <if test="prCode.typeCode !=null">
+                TYPECODE=#{prCode.typeCode},
+            </if>
+            <if test="prCode.mc !=null">
+                 MC=#{prCode.mc},
+            </if>
+            <if test="prCode.pid !=null">
+                 PID=#{prCode.pid},
+            </if>
+            <if test="prCode.type !=null">
+                 TYPE=#{prCode.type},
+            </if>
+
+        </set>
+        <where>
+            <if test="prCode.typeCode !=null">
+                TYPECODE=#{prCode.typeCode}
+            </if>
+            <if test="prCode.mc !=null">
+                AND MC=#{prCode.mc}
+            </if>
+            <if test="prCode.pid !=null">
+                AND  PID=#{prCode.pid}
+            </if>
+            <if test="prCode.type !=null">
+                AND  TYPE=#{prCode.type}
+            </if>
+
+        </where>
+    </update>
+
+    <!--插入资源表-->
+    <insert id="insertprCode" parameterType="PrCode">
+        INSERT INTO T_PROJECT_CODE (TYPECODE,MC,TYPE,PID,CID)
+        VALUES (#{typeCode},#{mc},#{type},#{pid},#{cid})
+    </insert>
+
+    <!--把基本 阶段字典添加到 项目阶段字典数据库中-->
+    <insert id="addprCodeByBaseCode" parameterType="map">
+        insert into t_project_code(typecode,mc,pid)  select typecode,mc,#{pid} from base_project_code where typecode in(${inStage})
+    </insert>
+
+    <!--删除 项目阶段字段  选择的记录-->
+    <delete id="deleteprojectcode" >
+        DELETE T_PROJECT_CODE WHERE
+        <include refid="cid_in"/>
+    </delete>
+
+    <!--当基本表中的 阶段被删除时同时也删除项目表中的相应的记录-->
+    <delete id="deleteprcodeByBaseCode" >
+        DELETE T_PROJECT_CODE
+        <where>
+            <if test="prCode.typeCode !=null">
+                TYPECODE=#{prCode.typeCode}
+            </if>
+            <if test="prCode.mc !=null">
+                AND MC=#{prCode.mc}
+            </if>
+            <if test="prCode.pid !=null">
+                AND  PID=#{prCode.pid}
+            </if>
+            <if test="prCode.type !=null">
+                AND  TYPE=#{prCode.type}
+            </if>
+            <if test="prCode.cid !=null">
+                AND  cid=#{prCode.cid}
+            </if>
+        </where>
+    </delete>
+
+
+    <update id="updatePrCodeByBaseCode" >
+        update t_project_code tc set tc.typecode=(select bc.typecode from base_project_code bc where bc.mc=tc.mc)
+    </update>
+
+
+    <update id="upMcByBaseCode">
+        update t_project_code tc set tc.mc=(select bc.mc from base_project_code bc where bc.typecode=tc.typecode)
+    </update>
+
+
+
+
+</mapper>

@@ -1,0 +1,31 @@
+<mobile-nav href={{back_url}}>
+    项目阶段维护
+    <button class="btn btn-success"  ng-click="submit_stage()" style="float: right;margin-right:20px;margin-top:-5px;" ng-disabled="isDisabled" >确定</button>
+</mobile-nav>
+
+<div class="scroller" >
+<!--
+    <div align="right" style="padding-right: 5%; border-bottom: 2px solid #00B83F;">
+        全选&nbsp;&nbsp;<input id="allSelected" name="stage" type="checkbox" ng-model="stageSelected"  >
+    </div>
+-->
+
+    <ul ng-if="projectStageList != null && projectStageList.length != 0" style="margin-top:0px;" >
+        <li ng-repeat="proStage in projectStageList" style="border-bottom: 1px solid #E8E8E8;">
+            <div >
+                <table style="width:100%; height: 40px; margin-top: 5px;">
+                    <tr>
+                        <td>
+                            <label for="proStage_{{proStage.typecode}}" class="col-sm-2 control-label" style="width: 100%;font-weight:100;" >
+                                {{$index + 1}}&nbsp;&nbsp;&nbsp;&nbsp;{{proStage.mc}}
+                            </label>
+                        </td>
+                        <td align="center" width="15%" >
+                            <input id="proStage_{{proStage.typecode}}" name="stage" type="checkbox" ng-model="proStage.pid" ng-click="updateSelected()">
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </li>
+    </ul>
+</div>

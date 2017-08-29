@@ -1,0 +1,34 @@
+<mobile-nav href={{href_type}}  >修改日志</mobile-nav>
+
+<div class="container-fluid" style="margin-top: 10px;">
+    <form class="form-horizontal"  name="editLogForm">
+        <div class="form-group">
+            <label class="col-sm-2 control-label">项目名称：</label>
+            <div class="col-sm-10">
+                {{prolog.pname}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="selectTag" class="col-sm-2 control-label">项目阶段：</label>
+            <div class="col-sm-10">
+                <input class="form-control" id="selectTag" name="stage" ng-model="prolog.pstage" ng-click="select_stage()" placeholder="请选择项目阶段" >
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-2 control-label">日志时间：</label>
+            <div class="col-sm-10">
+                {{prolog.cdate}}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="txt-content_edit" class="col-sm-2 control-label">日志内容：</label>
+            <div class="col-sm-12">
+                <div id="txt-content_edit" text-angular="text-angular" name="contents" ng-model="prolog.contents" text ta-disabled='disabled'></div>
+            </div>
+        </div>
+        <div class="form-group" style="margin:10px auto;">
+            <button class="btn btn-success btn-block" ng-click="submit()" ng-Disabled="!editLogForm.$valid" loading-button is-done="submitDone" >保存</button>
+        </div>
+    </form>
+
+</div>

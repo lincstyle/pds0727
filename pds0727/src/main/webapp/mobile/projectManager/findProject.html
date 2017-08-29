@@ -1,0 +1,47 @@
+<mobile-nav href="#/projectList">项目查询</mobile-nav>
+
+<div class="container-fluid" style="margin-top: 10px;">
+
+    <form class="form-horizontal" method="post" name="searchProForm" >
+
+        <div class="form-group">
+            <label for="select_pid" class="col-sm-2 control-label">项目名</label>
+            <div class="col-sm-10">
+                <input type="text" id="select_pid"  name="selectPname" ng-model="listFilter.pname" placeholder="模糊查询" class="form-control" ng-trim/>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="proPdate_start" class="col-sm-2 control-label">立项时间始</label>
+            <div class="col-sm-10">
+                <input type="date" id="proPdate_start" name="selectSDate" class="form-control" ng-model="listFilter.pdate_start" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="proPdate_end" class="col-sm-2 control-label">立项时间终</label>
+            <div class="col-sm-10">
+                <input type="date" id="proPdate_end" name="selectSDate" class="form-control" ng-model="listFilter.pdate_end" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="proLastDate_start" class="col-sm-2 control-label">最后修改时间始</label>
+            <div class="col-sm-10">
+                <input type="date" id="proLastDate_start" name="lastDate" class="form-control" ng-model="listFilter.lastDate_start" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="proLastDate_end" class="col-sm-2 control-label">最后修改时间终</label>
+            <div class="col-sm-10">
+                <input type="date" id="proLastDate_end" name="lastDate" class="form-control" ng-model="listFilter.lastDate_end" placeholder="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <div class="form-group" style="padding:10px 15px;" >
+            <button class="btn btn-success btn-block" ng-click="saveListFilter()" loading-button >查询</button>
+            <button class="btn btn-success btn-block" ng-click="resertData()" loading-button >清空</button>
+        </div>
+    </form>
+
+</div>

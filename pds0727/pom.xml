@@ -1,0 +1,564 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ctdcn</groupId>
+    <artifactId>pds</artifactId>
+    <packaging>war</packaging>
+    <version>1.0-SNAPSHOT</version>
+    <name>项目日报系统</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdk.version>1.6</jdk.version>
+
+        <asm.version>4.2</asm.version>
+        <cglib.version>3.1</cglib.version>
+
+        <commons-lang3.version>3.1</commons-lang3.version>
+        <common-collections4.version>4.0</common-collections4.version>
+        <commons-io.version>2.4</commons-io.version>
+        <guava.version>18.0</guava.version>
+        <common.fileupload.version>1.3</common.fileupload.version>
+        <common.compress.version>1.6</common.compress.version>
+        <ant.version>1.9.2</ant.version>
+
+        <junit.version>4.11</junit.version>
+
+        <servlet.version>3.0.1</servlet.version>
+        <jsp.version>2.2</jsp.version>
+        <jstl.version>1.2</jstl.version>
+        <standard.version>1.1.2</standard.version>
+
+        <aspectj.version>1.7.4</aspectj.version>
+        <spring.version>4.1.6.RELEASE</spring.version>
+        <spring.data.jpa.version>1.4.1.RELEASE</spring.data.jpa.version>
+
+        <shiro.version>1.2.2</shiro.version>
+
+        <slf4j.version>1.7.12</slf4j.version>
+
+        <druid.version>1.0.14</druid.version>
+        <fastjson.version>1.1.45</fastjson.version>
+
+        <httpclient.version>4.3.1</httpclient.version>
+
+        <joda-time.version>2.3</joda-time.version>
+        <prettytime.version>3.2.3.Final</prettytime.version>
+
+        <jsoup.version>1.7.3</jsoup.version>
+    </properties>
+
+    <dependencies>
+        <!-- aspectj相关jar包-->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjrt</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
+        </dependency>
+
+
+        <!-- spring相关jar包 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-task</artifactId>
+            <version>${spring.version}</version>
+        </dependency> -->
+        <!-- spring webmvc相关jar包 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+
+
+        <!-- web相关jar包 -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet.jsp</groupId>
+            <artifactId>jsp-api</artifactId>
+            <version>${jsp.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>taglibs</groupId>
+            <artifactId>standard</artifactId>
+            <version>${standard.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>${jstl.version}</version>
+        </dependency>
+
+        <!-- orm相关 -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>${druid.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.pagehelper</groupId>
+            <artifactId>pagehelper</artifactId>
+            <version>3.7.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>11.2.0.1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/main/resources/thrid-lib/ojdbc6-11.2.0.1.0.jar</systemPath>
+        </dependency>
+
+
+        <!-- 日志相关jar包 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- utils 相关jar包 -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${common-collections4.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.8.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>${common.fileupload.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>${common.compress.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>ant-launcher</artifactId>
+                    <groupId>org.apache.ant</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- apache shiro 相关jar包 -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-aspectj</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-ehcache</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-spring</artifactId>
+            <version>${shiro.version}</version>
+        </dependency>
+
+        <!-- 缓存相关包-->
+        <dependency>
+            <groupId>org.ehcache</groupId>
+            <artifactId>ehcache</artifactId>
+            <version>3.0.0.m2</version>
+        </dependency>
+
+        <!-- json 相关jar包 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>${fastjson.version}</version>
+        </dependency>
+		<!-- 定时器相关jar包 -->
+		<!-- <dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency> -->
+		
+		<!-- <dependency>
+			<groupId>opensymphony</groupId>
+			<artifactId>quartz-all</artifactId>
+			<version>1.6.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>2.1.1</version>
+		</dependency>
+        <!-- 时间相关 -->
+        <!--日期美化-->
+        <dependency>
+            <groupId>org.ocpsoft.prettytime</groupId>
+            <artifactId>prettytime</artifactId>
+            <version>${prettytime.version}</version>
+        </dependency>
+        <!-- joda time 相关jar包 -->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${joda-time.version}</version>
+        </dependency>
+
+        <!--  poi  对应jar包 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>3.5-beta5</version>
+        </dependency>
+
+		<!-- freemarker jar包 -->
+		<dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.20</version>
+        </dependency>
+
+        <!-- html处理jar包 -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
+
+        <!-- 汉字转拼音  -->
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
+        <!-- 微信 -->
+        <dependency>
+            <groupId>me.chanjar</groupId>
+            <artifactId>weixin-java-cp</artifactId>
+            <version>1.1.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <finalName>pds</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources/thrid-lib</directory>
+                            <targetPath>WEB-INF/lib</targetPath>
+                        </resource>
+                    </webResources>
+                    <warSourceDirectory>
+                        ${warSourceDirectory}
+                    </warSourceDirectory>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <execution>
+                        <id>exec-npm-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>exec-gulp</id>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <executable>gulp</executable>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>2.7.1</version>
+                <executions>
+                    <execution>
+                        <id>sonar</id>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>sonar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            
+            <!-- define the project compile level -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>mybatis/**/*.*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>mybatis/**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+        <pluginManagement>
+        	<plugins>
+        		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+        		<plugin>
+        			<groupId>org.eclipse.m2e</groupId>
+        			<artifactId>lifecycle-mapping</artifactId>
+        			<version>1.0.0</version>
+        			<configuration>
+        				<lifecycleMappingMetadata>
+        					<pluginExecutions>
+        						<pluginExecution>
+        							<pluginExecutionFilter>
+        								<groupId>
+        									org.codehaus.mojo
+        								</groupId>
+        								<artifactId>
+        									exec-maven-plugin
+        								</artifactId>
+        								<versionRange>
+        									[1.4.0,)
+        								</versionRange>
+        								<goals>
+        									<goal>exec</goal>
+        								</goals>
+        							</pluginExecutionFilter>
+        							<action>
+        								<ignore></ignore>
+        							</action>
+        						</pluginExecution>
+        					</pluginExecutions>
+        				</lifecycleMappingMetadata>
+        			</configuration>
+        		</plugin>
+        	</plugins>
+        </pluginManagement>
+    </build>
+
+
+    <profiles>
+        <!-- 开发环境 -->
+        <profile>
+            <id>develop</id>
+            <activation>
+                <!-- 默认激活的。-->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+
+                <sonar.host.url>http://127.0.0.1:8181/sonar</sonar.host.url>
+                <!-- 前端资源打包位置 -->
+                <warSourceDirectory>${basedir}/src/main/webapp</warSourceDirectory>
+                <!-- 数据库配置 -->
+                <db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+                <db.url>jdbc:oracle:thin:@127.0.0.1:1521:ORCL</db.url>
+                <db.username>PDS</db.username>
+                <db.password>PDS</db.password>
+                <!-- 日志配置 -->
+                <log.level>debug</log.level>
+                <log.logger.app>Console</log.logger.app>
+                <log.logger.sql>Console</log.logger.sql>
+            </properties>
+        </profile>
+        <!--
+            测试环境，只是数据库用的开发库
+            @TODO 之后准备建一个测试库
+        -->
+        <profile>
+            <id>test</id>
+            <properties>
+                <!-- 前端资源打包位置 -->
+                <warSourceDirectory>${project.build.directory}/buildWebApp</warSourceDirectory>
+                <!-- 数据库配置 -->
+                <db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+                <db.url>jdbc:oracle:thin:@127.0.0.1:1521:orcl</db.url>
+                <db.username>PDS</db.username>
+                <db.password>PDS</db.password>
+                <!-- 日志配置 -->
+                <log.level>debug</log.level>
+                <log.logger.app>fileRollingFile</log.logger.app>
+                <log.logger.sql>sqlRollingFile</log.logger.sql>
+            </properties>
+        </profile>
+        <!--
+            生产环境
+        -->
+        <profile>
+            <id>product</id>
+            <properties>
+                <!-- 前端资源打包位置 -->
+                <warSourceDirectory>${project.build.directory}/buildWebApp</warSourceDirectory>
+                <!-- 数据库配置 -->
+                <db.driverClassName>oracle.jdbc.driver.OracleDriver</db.driverClassName>
+                <db.url>jdbc:oracle:thin:@127.0.0.1:1521:orcl</db.url>
+                <db.username>PDS</db.username>
+                <db.password>PDS</db.password>
+                <!-- 日志配置 -->
+                <log.level>error</log.level>
+                <log.logger.app>fileRollingFile</log.logger.app>
+                <log.logger.sql>sqlRollingFile</log.logger.sql>
+            </properties>
+        </profile>
+    </profiles>	
+
+</project>

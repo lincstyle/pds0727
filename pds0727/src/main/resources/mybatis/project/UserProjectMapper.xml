@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.user">
+
+    <sql id="puWhere">
+        puid in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </sql>
+
+    <!--查询项目人员关系表-->
+    <select id="projectList" parameterType="ProjectUser"  resultType="ProjectUser">
+        SELECT a.PID,a.USERID,a.DEPARTMENTID,a.ISRECEIVE,a.PUID,a.PNAME,a.USERNAME,a.IS_RESPONSE FROM T_PROJECT_USER a,t_project b
+        <where>
+            AND a.pid = b.pid
+            <if test="userid != null">
+                AND a.USERID = #{userid}
+            </if>
+            AND b.isdelete = 0
+        </where>
+    </select>
+
+
+    <!--查询项目人员关系表-->
+    <select id="querypruser" parameterType="map"  resultType="ProjectUser">
+        SELECT a.PID,a.USERID,a.DEPARTMENTID,a.ISRECEIVE,a.PUID,a.PNAME,a.USERNAME,a.IS_RESPONSE,c.account FROM T_PROJECT_USER a, t_project b,sys_user c
+        <where>
+            AND a.pid = b.pid and a.userid = c.id and b.isdelete = 0
+            <if test="pruser.pid != null">
+                AND a.PID = #{pruser.pid}
+            </if>
+            <if test="pruser.userid != null">
+                AND a.USERID = #{pruser.userid}
+            </if>
+            <if test="pruser.departmentid != null">
+                AND a.DEPARETMENTID = #{pruser.departmentid}
+            </if>
+            <if test="pruser.isreceive != null">
+                AND a.ISRECEIVE = #{pruser.isreceive}
+            </if>
+            <if test="pruser.puid != null">
+                AND a.PUID = #{puser.puid}
+            </if>
+            <if test="pruser.isResponse != null">
+                AND a.IS_RESPONSE = #{pruser.isResponse}
+            </if>
+        </where>
+        order by b.pdate
+    </select>
+
+    <!--模糊查询项目人员关系表-->
+    <select id="mohuQuerypruser" parameterType="map"  resultType="ProjectUser">
+        SELECT  PID,USERID,DEPARTMENTID,ISRECEIVE,PUID,PNAME,USERNAME,IS_RESPONSE FROM T_PROJECT_USER
+        <where>
+            <if test="pruser.username !=null">
+                USERNAME LIKE  '${pruser.username}%'
+            </if>
+            <if test="pruser.pid !=null">
+               AND PID = #{pruser.pid}
+            </if>
+            <if test="pruser.userid !=null">
+                AND USERID =#{pruser.userid}
+            </if>
+            <if test="pruser.departmentid !=null">
+                AND DEPARETMENTID=#{pruser.departmentid}
+            </if>
+            <if test="pruser.isreceive !=null">
+                AND ISRECEIVE =#{pruser.isreceive}
+            </if>
+            <if test="pruser.puid != null">
+                AND PUID =#{puser.puid}
+            </if>
+        </where>
+    </select>
+
+
+  <!--查询记录条数-->
+    <select id="countrecord" parameterType="map" resultType="Integer">
+        SELECT count(1) FROM T_PROJECT_USER a,t_project b
+        <where>
+            <if test="pruser.pid !=null">
+                A.PID = #{pruser.pid}
+            </if>
+            <if test="pruser.userid !=null">
+                AND A.USERID =#{pruser.userid}
+            </if>
+            <if test="pruser.departmentid !=null">
+                AND A.DEPARETMENTID=#{pruser.departmentid}
+            </if>
+            <if test="pruser.isreceive !=null">
+                AND A.ISRECEIVE =#{pruser.isreceive}
+            </if>
+            AND a.pid = b.pid AND b.isdelete = 0
+        </where>
+    </select>
+
+    <!--插入记录-->
+    <insert id="insertproductuser" parameterType="ProjectUser">
+        INSERT  INTO T_PROJECT_USER (PID,USERID,DEPARTMENTID,ISRECEIVE,PUID,PNAME,USERNAME,IS_RESPONSE)
+        VALUES (#{pid},#{userid},#{departmentid},#{isreceive},#{puid},#{pname},#{username},#{isResponse})
+    </insert>
+
+    <!--删除记录-->
+    <delete id="deleteprojectuser" >
+        DELETE T_PROJECT_USER WHERE
+        <include refid="puWhere"/>
+    </delete>
+
+  <!--根据人员查询  其有权限操作的项目pu.PID,pu.USERID,pu.DEPARTMENTID,pu.ISRECEIVE,pu.PUID,pu.PNAME,pu.USERNAME,pu.IS_RESPONSE-->
+    <select id="querypnameByUser" parameterType="map"  resultType="ProjectUser">
+        SELECT
+        distinct pu.PID,pu.PNAME
+        FROM T_PROJECT_USER pu left JOIN t_project p on pu.pid = p.pid
+        <where>
+        	p.ISDELETE = 0
+            <if test="pruser.pid !=null">
+                AND pu.PID = #{pruser.pid}
+            </if>
+            <if test="pruser.userid !=null">
+                AND pu.USERID =#{pruser.userid}
+            </if>
+            <if test="pruser.departmentid !=null">
+                AND pu.DEPARETMENTID=#{pruser.departmentid}
+            </if>
+            <if test="pruser.isreceive !=null">
+                AND pu.ISRECEIVE =#{pruser.isreceive}
+            </if>
+            <if test="pruser.puid != null">
+                AND pu.PUID =#{puser.puid}
+            </if>
+        </where>
+    </select>
+
+	<update id="editIsReceive" parameterType="ProjectUser">
+		update t_project_user set isreceive = #{isreceive} where pid = #{pid} and userid = #{userid}
+	</update>
+
+    <update id="editResponse" parameterType="ProjectUser" >
+        update t_project_user set is_response = #{isResponse}
+        <where>
+            <if test="pid !=null">
+                AND PID = #{pid}
+            </if>
+            <if test="pidArr !=null">
+                AND PID IN
+                <foreach item="item" index="index" collection="pidArr" open="(" separator="," close=")" >
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userid !=null">
+                AND USERID =#{userid}
+            </if>
+            <if test="departmentid !=null">
+                AND DEPARETMENTID=#{departmentid}
+            </if>
+            <if test="isreceive !=null">
+                AND ISRECEIVE =#{isreceive}
+            </if>
+            <if test="puidArr != null">
+                AND PUID IN
+                <foreach item="item" index="index" collection="puidArr" open="(" separator="," close=")" >
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </update>
+
+    <!--查询下一个sequcence-->
+    <select id="queryPrUserSequcence" resultType="Integer">
+        select project_user_seq.NEXTVAL from dual
+    </select>
+
+    <!--查询出 该项目的 负责人id-->
+     <select id="queryPrUserId" parameterType="Map" resultType="Integer">
+         select userid FROM  T_PROJECT_USER  WHERE PID =#{pid}
+     </select>
+
+    <!--修改项目人员关系表的项目名-->
+    <update id="updateProName" parameterType="Map" >
+        update t_project_user set pname = #{pname} where pid = #{pid}
+    </update>
+    
+    <!--修改项目人员关系表-->
+    <update id="updateTProjectUser" parameterType="Map" >
+        update t_project_user tpu
+        <set>
+            <if test="updatePrUser.pid !=null and updatePrUser.pid !=''">
+                tpu.pid =#{updatePrUser.pid},
+            </if>
+            <if test="updatePrUser.userid !=null and updatePrUser.userid !=''">
+                tpu.userid =#{updatePrUser.userid},
+            </if>
+            <if test="updatePrUser.departmentid !=null and updatePrUser.departmentid !=''">
+                tpu.departmentid =#{updatePrUser.departmentid},
+            </if>
+            <if test="updatePrUser.isreceive !=null and updatePrUser.isreceive !=''">
+                tpu.isreceive =#{updatePrUser.isreceive},
+            </if>
+            <if test="updatePrUser.puid !=null and updatePrUser.puid !=''">
+                tpu.puid =#{updatePrUser.puid},
+            </if>
+            <if test="updatePrUser.pname !=null and updatePrUser.pname !=''">
+                tpu.pname =#{updatePrUser.pname},
+            </if>
+            <if test="updatePrUser.username !=null and updatePrUser.username !=''">
+                tpu.username =#{updatePrUser.username},
+            </if>
+            <if test="updatePrUser.isResponse !=null and updatePrUser.isResponse !=''">
+                tpu.isResponse =#{updatePrUser.isResponse},
+            </if> 
+        </set>
+        <trim prefix = "where" prefixOverrides = "and | or">
+            <if test="PrUser.pid !=null and PrUser.pid !=''">
+                and tpu.pid =#{PrUser.pid}
+            </if>
+            <if test="PrUser.userid !=null and PrUser.userid !=''">
+                and tpu.userid =#{PrUser.userid}
+            </if>
+            <if test="PrUser.departmentid !=null and PrUser.departmentid !=''">
+                and tpu.departmentid =#{PrUser.departmentid}
+            </if>
+            <if test="PrUser.isreceive !=null and PrUser.isreceive !=''">
+                and tpu.isreceive =#{PrUser.isreceive}
+            </if>
+            <if test="PrUser.puid !=null and PrUser.puid !=''">
+                and tpu.puid =#{PrUser.puid}
+            </if>
+            <if test="PrUser.pname !=null and PrUser.pname !=''">
+                and tpu.pname =#{PrUser.pname}
+            </if>
+            <if test="PrUser.username !=null and PrUser.username !=''">
+                and tpu.username =#{PrUser.username}
+            </if>
+            <if test="PrUser.isResponse !=null and PrUser.isResponse !=''">
+                and tpu.isResponse =#{PrUser.isResponse}
+            </if>
+        </trim>
+    </update>
+
+    <!-- 修改项目关系表(删除) -->
+    <delete id="updateDelPro" parameterType="Integer" >
+        delete from t_project_user t where
+        <include refid="puWhere" />
+    </delete>
+
+</mapper>

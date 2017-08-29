@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.department">
+
+    <sql id="departmentcolname">
+        DEPARTMENT_ID,DEPARTMENT_NAME,PARENT_ID,WIDTH
+    </sql>
+
+
+
+    <!--查询部门表-->
+    <select id="querydepartment" parameterType="map"  resultType="Department">
+        select  <include refid="departmentcolname" />  from  SYS_DEPARTMENT
+        <where>
+            <if test="department.departmentId !=null">
+                department_id=#{department.departmentId}
+            </if>
+            <if test="department.departmentName !=null">
+                AND    deparentment_name=#{department.departmentName}
+            </if>
+            <if test="department.parentId !=null">
+                AND    PARENT_ID=#{department.parentId}
+            </if>
+            <if test="department.width !=null">
+                AND    WIDTH=#{department.width}
+            </if>
+        </where>
+    </select>
+
+
+
+    <!--编辑部门表-->
+    <update id="updatedepartment" parameterType="map">
+        UPDATE SYS_DEPARTMENT  D
+        <set>
+            <if test="updateDe.departmentId !=null ">
+                D.DEPARTMENT_ID =#{updateDe.departmentId},
+            </if>
+            <if test="updateDe.departmentName !=null ">
+                D.DEPARTMENT_NAME=#{updateDe.departmentName},
+            </if>
+            <if test="updateDe.parentId !=null ">
+                D.PARENT_ID=#{updateDe.parentId},
+            </if>
+            <if test="updateDe.width !=null ">
+                D.WIDTH=#{updateDe.width},
+            </if>
+        </set>
+        <where>
+            <if test="department.departmentId !=null">
+                department_id=#{department.departmentId}
+            </if>
+            <if test="department.departmentName !=null">
+                AND    deparentment_name=#{department.departmentName}
+            </if>
+            <if test="department.parentId !=null">
+                AND    PARENT_ID=#{department.parentId}
+            </if>
+            <if test="department.width !=null">
+                AND    WIDTH=#{department.width}
+            </if>
+        </where>
+    </update>
+
+
+
+    <!--插入部门表-->
+    <insert id="insertdepartment" parameterType="Department">
+        INSERT INTO SYS_DEPARTMENT (DEPARTMENT_ID,DEPARTMENT_NAME,PARENT_ID,WIDTH,has_children,sort)
+        VALUES (#{departmentId},#{departmentName},#{parentId},#{width},#{hasChildren},#{sort})
+    </insert>
+
+
+    <!--删除资源表记录-->
+    <delete id="deletedepartment" parameterType="map">
+        Delete FROM SYS_DEPARTMENT R
+        <where>
+            <if test="department.departmentId !=null">
+                department_id=#{department.departmentId}
+            </if>
+            <if test="department.departmentName !=null">
+                AND    deparentment_name=#{department.departmentName}
+            </if>
+            <if test="department.parentId !=null">
+                AND    PARENT_ID=#{department.parentId}
+            </if>
+            <if test="department.width !=null">
+                AND    WIDTH=#{department.width}
+            </if>
+        </where>
+    </delete>
+    
+    <select id="getDepartmentTree" parameterType="java.lang.Integer" resultType="Department">
+	    select * from SYS_DEPARTMENT 
+        <where>
+        	<if test="_parameter == 0">
+                parent_id = 0
+            </if>
+            <if test="_parameter != 0">
+                parent_id = #{_parameter}
+            </if>
+        </where>
+        order by sort
+    </select>
+    
+    <select id="getDepartmentById" parameterType="java.lang.Integer" resultType="Department">
+    	select * from sys_department where department_id = #{id}
+    </select>
+    
+    <select id="getChildrenCount" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+    	select count(1) from sys_department where parent_id = #{oldParentId}
+    </select>
+    
+    <select id="getDepartmentList" parameterType="java.lang.Integer" resultType="Department" >
+    	select * from sys_department
+    	<where>
+    		<if test="_parameter != null">
+                parent_id = #{_parameter}
+            </if>
+    	</where>
+    	order by sort
+    </select>
+    
+    <update id="editDepartment" parameterType="Department">
+    	update sys_department set department_name = #{departmentName},parent_id = #{parentId},
+    	width = #{width},has_children = #{hasChildren},sort = #{sort}
+    	where department_id = #{departmentId}
+    </update>
+
+	<delete id="delDepartment" parameterType="java.lang.Integer">
+		delete from sys_department where department_id = #{departmentId}
+	</delete>
+	
+	<delete id="delChildDepartment" parameterType="java.lang.Integer">
+		delete from sys_department where parent_id = #{departmentId}
+	</delete>
+	
+	<select id="getSequenceId" resultType="java.lang.Integer">
+		select depart_seq.nextval from DUAL
+	</select>
+	
+	<select id="getMaxSort" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+		select max(sort) from sys_department where parent_id = #{parentId}
+	</select>
+
+    <update id="updateWidth" parameterType="Map">
+        update SYS_DEPARTMENT  SD set SD.WIDTH=
+        (select l from (select a.*,level l from sys_department a start with department_id=#{departmentId} connect by prior department_id=parent_id) where department_id=#{departmentId})
+        WHERE SD.DEPARTMENTID= #{departmentId}
+    </update>
+
+    <update id="updateDepartmentWidth" >
+        update sys_department S set S.WIDTH = (SELECT B.L
+        FROM (select a.*, level l
+        from sys_department a
+        start with parent_id = 1
+        connect by prior
+        department_id =
+        parent_id) B
+        where B.DEPARTMENT_ID =
+        S.Department_Id)
+    </update>
+
+
+    <update id="updateDepartmentHasChildren">
+        update sys_department t set t.has_children = decode((select count(1) from sys_department c where c.parent_id = t.department_id ),0,0,1)
+    </update>
+</mapper>

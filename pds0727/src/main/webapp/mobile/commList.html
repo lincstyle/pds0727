@@ -1,0 +1,41 @@
+<mobile-nav href={{back_url}}>
+    {{title}}
+    <button class="btn btn-success"  ng-click="submit_comm()" style="float: right;margin-right:20px;margin-top:-5px;"  >确定</button>
+</mobile-nav>
+
+<div style="width:95%; height:45px; position: fixed;z-index:1; background-color: white; margin-top: -14px; border-bottom: thin solid #00B83F;" >
+    <input id="search_comm" type="search" ng-model="search_input" placeholder="姓名汉字/全拼/简拼"
+           style=" width:80%; height:42px; border: hidden; float:left; background-color:white;" />
+    <div style="width:20%; height:42px; float:left; margin-top: 12px;" ng-click="search_comm(search_input)">
+        <i class="fa fa-search" >搜索</i>
+    </div>
+</div>
+
+<div class="scroller" >
+    <ul ng-if="commUser != null && commUser.length != 0" style="margin-top: 32px;" >
+        <li ng-repeat="user in commUser" ng-if="user.id != 0" style="border-bottom: 1px solid #E8E8E8;">
+            <div ng-if="$first || user.departmentName != commUser[$index - 1].departmentName" style="background-color:#E8E8E8;height: 30px;padding-top: 5px;" >
+                <label class="col-sm-2 control-label">
+                    {{user.departmentName}}
+                </label>
+            </div>
+            <br/>
+            <div>
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <label for="comm_user_{{user.id}}" class="col-sm-2 control-label" style="width: 100%;font-weight:100;" >
+                                {{user.name}}
+                            </label>
+                        </td>
+                        <td align="center" width="15%" >
+                            <input id="comm_user_{{user.id}}" name="comm" type="checkbox" ng-model="user.pid" >
+                        </td>
+                    </tr>
+                </table>
+
+            </div><br/>
+        </li>
+    </ul>
+
+</div>

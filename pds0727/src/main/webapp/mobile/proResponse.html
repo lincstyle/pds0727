@@ -1,0 +1,42 @@
+<mobile-nav href="{{proResponseBack}}" >
+    {{title}}
+    <button class="btn btn-success" type="submit" ng-click="submit_comm()" style="float: right;margin-right:20px;margin-top:-5px;" ng-disabled="isDisabled" >确定</button>
+</mobile-nav>
+
+<div style="width:91%; height:45px; position: fixed;z-index:1; background-color: white; margin-top: -10px; border-bottom: thin solid #00B83F;" >
+    <input id="search_respsonse" type="search" ng-model="search_input" placeholder="姓名汉字/全拼/简拼"
+           style="width:75%; height:42px; margin-top:2px; border: hidden; float:left; background-color:white;" />
+    <div align="right">
+        <i class="fa fa-search" style="margin: 15px 10px;" ng-click="search_user(search_input)" >搜索</i>
+    </div>
+</div>
+
+<div class="scroller" >
+
+    <ul ng-if="userList != null && userList.length != 0" style="margin-top: 32px;" >
+        <li ng-repeat="user in userList" ng-if="user.id != 0" style="border-bottom: 1px solid #E8E8E8;">
+            <div ng-if="$first || user.departmentName != userList[$index - 1].departmentName" style="background-color:#E8E8E8;height: 30px;padding-top: 5px;" >
+                <label class="col-sm-2 control-label">
+                    {{user.departmentName}}
+                </label>
+            </div>
+            <br/>
+            <div>
+                <table width="100%">
+                    <tr>
+                        <td>
+                            <label for="user_{{user.id}}" class="col-sm-2 control-label" style="width: 100%;font-weight:100;" >
+                                {{user.name}}
+                            </label>
+                        </td>
+                        <td align="center" width="15%" >
+                            <input id="user_{{user.id}}" name="response" type="checkbox" ng-model="user.account" ng-click="selected()" >
+                        </td>
+                    </tr>
+                </table>
+
+            </div><br/>
+        </li>
+    </ul>
+
+</div>

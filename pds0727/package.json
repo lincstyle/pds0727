@@ -1,0 +1,19 @@
+{
+  "name": "pds",
+  "version": "0.1.0",
+  "description": "主要用来打包并压缩前端资源",
+  "author": "张靖<zjblague@gmail.com>",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "gulp": "~3.9.0",
+    "gulp-rev-all": "~0.8.22",
+    "gulp-uglify": "~1.5.1",
+    "gulp-filter": "~3.0.1",
+    "gulp-csso":"~1.0.1",
+    "gulp-useref":"3.0.3"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  }
+}

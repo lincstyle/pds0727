@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.user">
+    <sql id="colums">
+      TEL ,LASTLOGDATE ,CREATEDATE ,ROLE ,LASTPWDDATE ,IS_USED ,DEVICEID ,ID ,PWD ,ACCOUNT ,NAME ,WEIXIN ,EMAIL ,DEPARTMENT_ID,DEPARTMENT_NAME ,GENDER,IMG_URL, quanpin, jianpin
+    </sql>
+    <select id="query" parameterType="java.util.Map" resultType="User" >
+        SELECT
+        <include refid="colums" />
+        FROM  SYS_USER U
+        <where >
+            <if test="user.id != null">
+                U.ID = #{user.id}
+            </if>
+            <if test="user.account != null">
+                AND U.ACCOUNT = #{user.account}
+            </if>
+        </where>
+        <if test="orderCols != null">
+            ORDER BY
+            <foreach item="item" index="index" collection="orderCols"
+                     separator=",">
+                ${item}
+            </foreach>
+            ${order}
+        </if>
+    </select>
+
+    <insert id="add" parameterType="User" >
+        INSERT INTO SYS_USER (<include refid="colums" /> )  VALUES
+        (#{tel}, #{lastlogdate}, #{createDate}, #{role}, #{lastpwddate}, #{isUsed}, #{deviceId}, #{id}, #{pwd}, #{account}, #{name},
+         #{weixin}, #{email}, #{departmentId}, #{departmentName}, #{gender}, #{imgUrl}, #{quanpin}, #{jianpin} )
+    </insert>
+
+    <update id="edit" parameterType="map">
+        UPDATE SYS_USER
+        <set>
+            <if test="target.tel != null ">TEL  =#{target.tel}, </if>
+            <if test="target.lastlogdate != null ">LASTLOGDATE =    #{target.lastlogdate}, </if>
+            <if test="target.createDate != null ">CREATEDATE =    #{target.createDate}, </if>
+            <if test="target.role != null ">ROLE =    #{target.role}, </if>
+            <if test="target.lastpwddate != null ">LASTPWDDATE =    #{target.lastpwddate}, </if>
+            <if test="target.isUsed != null ">IS_USED =    #{target.isUsed}, </if>
+            <if test="target.deviceId != null ">DEVICEID =    #{target.deviceId}, </if>
+            <if test="target.id != null ">ID =    #{target.id}, </if>
+            <if test="target.pwd != null ">PWD =    #{target.pwd}, </if>
+            <if test="target.account != null ">ACCOUNT =    #{target.account}, </if>
+            <if test="target.name != null ">NAME =    #{target.name}, </if>
+            <if test="target.weixin != null ">WEIXIN =    #{target.weixin}, </if>
+            <if test="target.email != null ">EMAIL =    #{target.email}, </if>
+            <if test="target.departmentId != null ">DEPARTMENT_ID =    #{target.departmentId}, </if>
+            <if test="target.departmentName != null ">DEPARTMENT_NAME =    #{target.departmentName}, </if>
+            <if test="target.gender != null ">GENDER =    #{target.gender}, </if>
+            <if test="target.quanpin != null ">QUANPIN =    #{target.quanpin}, </if>
+            <if test="target.jianpin != null ">JIANPIN =    #{target.jianpin} </if>
+        </set>
+        <where>
+            <if test="cond.id != null ">ID =    #{cond.id}</if>
+            <if test="cond.deparmentId != null "> AND DEPARTMENT_ID =    #{cond.deparmentId} </if>
+        </where>
+    </update>
+
+    <delete id="remove" parameterType="User">
+        DELETE  FROM SYS_USER WHERE ID = #{id}
+    </delete>
+    
+    <delete id="delUser" parameterType="Integer">
+        DELETE FROM SYS_USER WHERE ID = #{userId}
+    </delete>
+    
+    <!-- 得到指定部门下的所有的员工(包括子部门)  -->
+    <select id="getDepartmentUser" parameterType="String" resultType="User">
+		select * from sys_user u where u.department_id in (${_parameter})
+    </select>
+    
+    <!-- 得到指定部门下的所有的员工(包括子部门)的总人数 -->
+    <select id="getDepartmentUserTotal" parameterType="String" resultType="Integer">
+    	select count(1) from sys_user u where u.department_id in (${_parameter})
+    </select>
+    
+    <!-- 根据ID得到用户 -->
+    <select id="getUserById" parameterType="Integer" resultType="User">
+    	select <include refid="colums" /> from sys_user where id = #{userId}
+    </select>
+
+	<update id="editUser" parameterType="User">
+        UPDATE SYS_USER
+        <set>
+            <if test="tel != null ">TEL = #{tel}, </if>
+            <if test="lastlogdate != null ">LASTLOGDATE = #{lastlogdate}, </if>
+            <if test="createDate != null ">CREATEDATE = #{createDate}, </if>
+            <if test="role != null ">ROLE = #{role}, </if>
+            <if test="lastpwddate != null ">LASTPWDDATE = #{lastpwddate}, </if>
+            <if test="isUsed != null ">IS_USED = #{isUsed}, </if>
+            <if test="deviceId != null ">DEVICEID = #{deviceId}, </if>
+            <if test="pwd != null ">PWD = #{pwd}, </if>
+            <if test="account != null ">ACCOUNT = #{account}, </if>
+            <if test="name != null ">NAME = #{name}, </if>
+            <if test="weixin != null ">WEIXIN = #{weixin}, </if>
+            <if test="email != null ">EMAIL = #{email}, </if>
+            <if test="departmentId != null ">DEPARTMENT_ID = #{departmentId}, </if>
+            <if test="departmentName != null ">DEPARTMENT_NAME = #{departmentName}, </if>
+            <if test="gender != null ">GENDER = #{gender}, </if>
+            <if test="quanpin != null ">QUANPIN = #{quanpin}, </if>
+            <if test="jianpin != null ">JIANPIN = #{jianpin} </if>
+        </set>
+        <where>
+            ID = #{id}
+        </where>
+    </update>
+
+	<select id="getDepId" resultType="java.lang.Integer">
+		select depart_seq.nextval from DUAL
+	</select>
+
+    <select id="getUserSeqId" resultType="java.lang.Integer" flushCache="true" useCache="false">
+        select user_seq.nextval from DUAL
+    </select>
+
+    <select id="queryAllUser" parameterType="User" resultType="User">
+        SELECT
+        <include refid="colums" />
+        FROM  SYS_USER U
+        <where >
+            <if test="tel != null ">TEL = #{tel}</if>
+            <if test="lastlogdate != null "> and LASTLOGDATE = #{lastlogdate} </if>
+            <if test="createDate != null ">and CREATEDATE = #{createDate} </if>
+            <if test="role != null ">and ROLE = #{role}</if>
+            <if test="lastpwddate != null "> and LASTPWDDATE = #{lastpwddate}</if>
+            <if test="isUsed != null "> and IS_USED = #{isUsed} </if>
+            <if test="deviceId != null ">and DEVICEID = #{deviceId} </if>
+            <if test="pwd != null ">and PWD = #{pwd} </if>
+            <if test="account != null ">and ACCOUNT = #{account}</if>
+            <if test="name != null ">NAME = #{name} </if>
+            <if test="weixin != null ">and WEIXIN = #{weixin} </if>
+            <if test="email != null ">and EMAIL = #{email} </if>
+            <if test="departmentId != null ">and DEPARTMENT_ID = #{departmentId} </if>
+            <if test="departmentName != null ">and DEPARTMENT_NAME = #{departmentName} </if>
+            <if test="gender != null ">and GENDER = #{gender} </if>
+            <if test="quanpin != null ">and QUANPIN = #{quanpin} </if>
+            <if test="jianpin != null ">and JIANPIN = #{jianpin} </if>
+        </where>
+    </select>
+
+    <!--查询还未参与该项目的人员-->
+    <select id="queryPrUser" parameterType="Map" resultType="User">
+        SELECT
+        <include refid="colums" />
+        FROM  SYS_USER U
+        WHERE ID  NOT IN (SELECT USERID FROM T_PROJECT_USER WHERE PID=#{pid} )
+    </select>
+
+	<select id="findUser" parameterType="User" resultType="User">
+		SELECT <include refid="colums" /> FROM SYS_USER U 
+        <where >
+            <if test="name != null ">NAME LIKE '%${name}%' </if>
+            <if test="tel != null ">AND TEL LIKE '%${tel}%'</if>
+            <if test="role != null ">AND ROLE = #{role}</if>
+            <if test="account != null ">AND ACCOUNT LIKE '%${account}%'</if>
+            <if test="weixin != null ">AND WEIXIN LIKE '%${weixin}%' </if>
+            <if test="email != null ">AND EMAIL LIKE '%${email}%' </if>
+            <if test="departmentId != null ">AND DEPARTMENT_ID = #{departmentId} </if>
+            <if test="departmentName != null ">and DEPARTMENT_NAME LIKE '%${departmentName}%' </if> 
+            <if test="gender != null ">AND GENDER = #{gender} </if>
+            <if test="quanpin != null ">AND QUANPIN = #{quanpin} </if>
+            <if test="jianpin != null ">AND JIANPIN = #{jianpin} </if>
+        </where>
+	</select>
+	
+	<select id="findUserTotal" parameterType="User" resultType="Integer">
+		SELECT count(1) FROM SYS_USER U 
+        <where >
+            <if test="name != null ">NAME LIKE '%${name}%' </if>
+            <if test="tel != null ">AND TEL LIKE '%${tel}%'</if>
+            <if test="role != null ">AND ROLE = #{role}</if>
+            <if test="account != null ">AND ACCOUNT LIKE '%${account}%'</if>
+            <if test="weixin != null ">AND WEIXIN LIKE '%${weixin}%' </if>
+            <if test="email != null ">AND EMAIL LIKE '%${email}%' </if>
+            <if test="departmentId != null ">AND DEPARTMENT_ID = #{departmentId} </if>
+            <if test="departmentName != null ">and DEPARTMENT_NAME LIKE '%${departmentName}%' </if>
+            <if test="gender != null ">AND GENDER = #{gender} </if>
+            <if test="quanpin != null ">AND QUANPIN = #{quanpin} </if>
+            <if test="jianpin != null ">AND JIANPIN = #{jianpin} </if>
+        </where>
+	</select>
+	
+	<update id="updateUserDepartmentName" parameterType="Map" >
+		update sys_user set department_name = #{newDepartName} where department_name = #{oldDepartName}
+	</update>
+	
+	<update id="saveUploadImg" parameterType="User">
+		update sys_user set img_url = #{imgUrl} where id = #{id}
+	</update>
+
+    <update id="updateAllUser" parameterType="map">
+        UPDATE SYS_USER
+        <set>
+            <if test="target.tel != null ">TEL  =#{target.tel}, </if>
+            <if test="target.lastlogdate != null ">LASTLOGDATE =    #{target.lastlogdate}, </if>
+            <if test="target.createDate != null ">CREATEDATE =    #{target.createDate}, </if>
+            <if test="target.role != null ">ROLE =    #{target.role}, </if>
+            <if test="target.lastpwddate != null ">LASTPWDDATE =    #{target.lastpwddate}, </if>
+            <if test="target.isUsed != null ">IS_USED =    #{target.isUsed}, </if>
+            <if test="target.deviceId != null ">DEVICEID =    #{target.deviceId}, </if>
+            <if test="target.id != null ">ID =    #{target.id}, </if>
+            <if test="target.pwd != null ">PWD =    #{target.pwd}, </if>
+            <if test="target.account != null ">ACCOUNT =    #{target.account}, </if>
+            <if test="target.name != null ">NAME =    #{target.name}, </if>
+            <if test="target.weixin != null ">WEIXIN =    #{target.weixin}, </if>
+            <if test="target.email != null ">EMAIL =    #{target.email}, </if>
+            <if test="target.departmentId != null ">DEPARTMENT_ID =    #{target.departmentId}, </if>
+            <if test="target.departmentName != null ">DEPARTMENT_NAME =    #{target.departmentName}, </if>
+            <if test="target.gender != null ">GENDER =    #{target.gender}, </if>
+            <if test="target.imgUrl != null ">IMG_URL =    #{target.imgUrl}, </if>
+            <if test="target.quanpin != null ">QUANPIN = #{target.quanpin}, </if>
+            <if test="target.jianpin != null ">JIANPIN = #{target.jianpin} </if>
+        </set>
+        <where>
+            <if test="target.account != null ">ACCOUNT =#{target.account}</if>
+        </where>
+    </update>
+
+    <update id="updateSysUserDepartmentName" >
+        update SYS_USER SU set SU.DEPARTMENT_NAME=(SELECT D.DEPARTMENT_NAME  FROM SYS_DEPARTMENT D WHERE D.DEPARTMENT_ID=SU.DEPARTMENT_ID )
+    </update>
+
+
+
+    <!-- 获取 添加项目参与人员所需要的信息 -->
+    <select id="getProUser" resultType="User">
+        select u.id, u.name, u.department_id from sys_user u where u.id in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")" >
+            ${item}
+        </foreach>
+    </select>
+
+    <select id="getProResponse" parameterType="User" resultType="User">
+        SELECT <include refid="colums" /> FROM SYS_USER u
+        <where>
+            u.is_used = #{isUsed}
+            <if test="name != null" >
+                AND (name LIKE '${name}%' or quanpin LIKE '${name}%' or jianpin LIKE '${name}%')
+            </if>
+        </where>
+        order by u.department_name, u.jianpin
+    </select>
+
+    <select id="commList" parameterType="Map" resultType="User" >
+        select us.id, us.name,us.department_id, us.department_name, pu.puid, pu.pid, pu.is_response from (
+        select u.id,u.name,u.department_id,u.department_name,u.jianpin from sys_user u
+        <where>
+            u.is_used = 1
+            <if test="inputParam != null" >
+                AND (u.name LIKE '${inputParam}%' or u.quanpin LIKE '${inputParam}%' or u.jianpin LIKE '${inputParam}%')
+            </if>
+        </where>
+        ) us left join (select p.userid, p.puid,p.pid, p.is_response from t_project_user p where p.pid = #{pid}) pu on us.id = pu.userid
+        order by us.department_name, us.jianpin
+    </select>
+
+    <select id="getProjectIsResponse" parameterType="Map" resultType="User">
+        select us.id,us.name,us.department_name,us.jianpin,b.puid,b.is_response,b.pid from (
+        select u.id,u.name,u.department_id,u.department_name,u.jianpin from sys_user u
+        <where>
+            u.is_used = 1
+            <if test="inputParam != null" >
+                AND (u.name LIKE '${inputParam}%' or u.quanpin LIKE '${inputParam}%' or u.jianpin LIKE '${inputParam}%')
+            </if>
+        </where>
+        ) us left join ( select t.puid,t.is_response,t.userid,t.pid from t_project_user t
+        <where>
+            t.pid = #{pid}
+            <if test="isResponse != null" >
+                and t.is_response = #{isResponse}
+            </if>
+        </where>
+        ) b
+        on us.id = b.userid order by us.department_name,us.jianpin
+    </select>
+
+</mapper>
+
+
+

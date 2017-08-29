@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="project.baseCode">
+
+    <!--查询基本项目编码表-->
+    <select id="queryBaseCode" parameterType="map"  resultType="BaseCode">
+        select  TYPECODE,MC,SERIAL from  BASE_PROJECT_CODE
+        <where>
+            <if test="BaseCode.typeCode !=null">
+                  typecode=#{BaseCode.typeCode}
+            </if>
+            <if test="BaseCode.mc !=null">
+                AND  mc=#{BaseCode.mc}
+            </if>
+        </where>
+        order by SERIAL
+    </select>
+    <!--查询基本项目编码表typeCode的最大序列号-->
+    <select id="queryTypeCodeSequcence" parameterType="Integer" resultType="Integer">
+         select base_project_code_typecode_seq.NEXTVAL from dual
+    </select>
+
+    <!--记录总条数-->
+
+
+
+
+
+    <!--编辑项目编码表-->
+    <update id="updateBaseCode" parameterType="map">
+        UPDATE BASE_PROJECT_CODE
+        <set>
+            <if test="upBaseCode.typeCode !=null">
+                TYPECODE=#{upBaseCode.typeCode},
+            </if>
+            <if test="upBaseCode.mc !=null">
+                MC=#{upBaseCode.mc},
+            </if>
+        </set>
+        <where>
+            <if test="BaseCode.typeCode !=null">
+                typecode=#{BaseCode.typeCode}
+            </if>
+            <if test="BaseCode.mc !=null">
+               AND mc=#{BaseCode.mc}
+            </if>
+        </where>
+    </update>
+
+    <!--插入 基本阶段编码表-->
+
+    <insert id="insertBaseCode" parameterType="PrCode">
+        INSERT INTO BASE_PROJECT_CODE (TYPECODE,MC,SERIAL)
+        VALUES (#{typeCode},#{mc},#{serial})
+    </insert>
+
+
+
+
+    <!--删除 项目阶段字段  选择的记录-->
+    <delete id="deleteBaseCode" >
+        DELETE BASE_PROJECT_CODE
+        <where>
+            <if test="BaseCode.typeCode !=null">
+                typecode=#{BaseCode.typeCode}
+            </if>
+            <if test="BaseCode.mc !=null">
+              AND  mc=#{BaseCode.mc}
+            </if>
+        </where>
+    </delete>
+
+    <update id="moveBaseCode" parameterType="map">
+        UPDATE BASE_PROJECT_CODE SET SERIAL=
+        <choose>
+            <when test=" target == null ">
+                -1 WHERE SERIAL > #{original}
+            </when>
+            <when test="target > original">
+                -1 WHERE SERIAL > #{original} AND #{target} >= SERIAL
+            </when>
+            <otherwise>
+                +1 WHERE SERIAL >= #{target} AND #{original} > SERIAL
+            </otherwise>
+        </choose>
+    </update>
+
+    <update id="ReplaceBaseCode" parameterType="map">
+        UPDATE BASE_PROJECT_CODE SET SERIAL = #{target}
+        WHERE  mc =#{originalMc}
+    </update>
+
+
+    <update id="updateBaseCodeByAddBefore" parameterType="map">
+        UPDATE BASE_PROJECT_CODE SET SERIAL = SERIAL
+        <choose>
+            <when test=" flag==1 ">
+               +1 WHERE SERIAL >=#{addTypecode}
+            </when>
+            <when test=" flag==2 ">
+                +1 WHERE SERIAL >#{addTypecode}
+            </when>
+            <when test="flag==3">
+                -1 WHERE SERIAL >#{addTypecode}
+            </when>
+        </choose>
+    </update>
+
+
+
+</mapper>

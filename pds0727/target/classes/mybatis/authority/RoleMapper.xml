@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sys.Role">
+
+	<!-- 添加角色 -->
+	<insert id="insertRole" parameterType="Role">
+		insert into sys_role (role_id,role_name, description, role)
+		values (role_seq.nextval, #{roleName}, #{description}, #{role})
+	</insert>
+
+	<!-- 根据ID删除角色 -->
+	<delete id="delRole" parameterType="Integer">
+		delete from sys_role where role_id = #{role_id}
+	</delete>
+	
+	<!-- 根据ID删除角色相对应的资源 -->
+	<delete id="delRoleResource" parameterType="Integer">
+		delete from SYS_ROLE_RESOURCE where role_id = #{role_id}
+	</delete>
+	
+	<!-- 根据ID修改角色 -->
+	<update id="updateRole" parameterType="Role">
+		update sys_role set role_name = #{roleName},description = #{description},role = #{role}
+		where role_id = #{roleId}
+	</update>
+
+	<!-- 根据ID得到角色 -->
+	<select id="getRoleById" parameterType="Integer" resultType="Role">
+		select * from sys_role where role_id = #{roleId}
+	</select>
+
+	<!-- 得到所有角色,返回角色类型集合 -->
+	<select id="getRoleList" parameterType="java.util.Map" resultType="Role">
+		select * from sys_role order by role_id
+	</select>
+
+	<select id="getRoleTotal" resultType="Integer">
+		select count(1) from sys_role
+	</select>
+	
+	<!-- 角色下拉框 -->
+	<select id="comboRoleList" resultType="Role">
+		select * from sys_role order by role_id
+	</select>
+	
+	<!-- 验证输入的角色名和角色值 
+	-->
+	<select id="changeRole" parameterType="map" resultType="Role" >
+		select * from sys_role
+		<where>
+			<if test="type == 'add'">
+				role_name = #{roleName} or role = #{role}
+			</if>
+			<if test="type == 'edit'">
+				(role_name = #{roleName} or role = #{role}) and role_id != #{roleId}
+			</if>
+		</where>
+	</select>
+</mapper>

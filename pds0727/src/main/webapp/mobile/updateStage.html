@@ -1,0 +1,35 @@
+<mobile-nav href="{{backHref_type}}">
+    {{updateStage_title}}
+    <button class="btn btn-success" ng-if="proStageList != null && proStageList.length != 0" ng-click="update_stage_submit()" style="float: right;margin-right:20px;margin-top:-5px;"
+            ng-disabled="updateStage_isDisabled" >确定</button>
+</mobile-nav>
+
+<div class="scroller" >
+    <form name="proStageListForm">
+    <ul ng-if="proStageList != null && proStageList.length != 0" style="margin-top:0px;" >
+        <li ng-repeat="proStage in proStageList" style="border-bottom: 1px solid #E8E8E8;">
+            <div>
+                <table style="width:100%; height: 40px; margin-top: 5px;">
+                    <tr>
+                        <td>
+                            <label for="pStage_{{proStage.typecode}}" class="col-sm-2 control-label" style="width: 100%;font-weight:100;" >
+                                {{$index + 1}}&nbsp;&nbsp;&nbsp;&nbsp;{{proStage.mc}}
+                            </label>
+                        </td>
+                        <td align="center" width="15%" >
+                            <input id="pStage_{{proStage.typecode}}" name="stage" type="radio" ng-model="u_selected" value="{{proStage.typecode}}"
+                                   ng-click="onRadioClick({{proStage.typecode}},'{{proStage.mc}}')" >
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </li>
+    </ul>
+    </form>
+    <ul ng-if="proStageList.length < 1" >
+        <li>
+            <div class="alert alert-warning" align="center" >{{error}}</div>
+        </li>
+    </ul>
+
+</div>

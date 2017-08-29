@@ -1,0 +1,32 @@
+<mobile-nav href="#/plusLog">
+    选择项目名
+    <botton class="btn btn-success" type="submit" ng-click="submit_proPname()" style="float: right;margin-right:20px;margin-top:-5px;" ng-disabled="isDisabled" >确定</botton>
+</mobile-nav>
+
+<div class="scroller">
+    <form name="pnameListForm">
+    <div class="row" ng-if="pnameList != null && pnameList.length != 0"
+         style="border-bottom: 1px solid #E8E8E8;padding: 15px 0px 15px 0px;" ng-repeat="project in pnameList">
+
+            <div class="col-xs-1">
+                {{$index + 1}}
+            </div>
+            <div class="col-xs-9">
+                {{project.pname}}
+            </div>
+            <div class="col-xs-1">
+                <input id="user_{{project.puid}}" name="pname" type="radio" ng-model="project.puid"
+                       value="{{project.pid}}" ng-click="onRadioClick('{{project.pname}}','{{project.pid}}')">
+            </div>
+
+    </div>
+    </form>
+
+    <ul ng-if="pnameList.length <= 0" >
+        <li>
+            <div class="alert alert-warning" align="center" >{{error}}</div>
+        </li>
+    </ul>
+
+</div>
+
